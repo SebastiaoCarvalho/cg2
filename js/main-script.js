@@ -3,7 +3,14 @@
 //////////////////////
 var mainCamera, cameras;
 var renderer, scene;
+var materials
+var trailerBoxMaterial, trailerWheelMaterial;
 
+/* Size constants */
+const lTrailer = 48, hTrailer = 18, dTrailer = 12;
+const rTrailerWheel = 4, hTrailerWheel = 1;
+const rTrailerConnector = 2, hTrailerConnector = 2;
+const radialSegments = 32;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -72,15 +79,7 @@ function createCamera() {
     tempCamera.position.set(distance,distance,distance);
     tempCamera.lookAt(scene.position);
     cameras.push(tempCamera); 
-}
-
-/////////////////////
-/* CREATE LIGHT(S) */
-/////////////////////
-
-////////////////////////
-/* CREATE OBJECT3D(S) */
-////////////////////////
+}material
 function createTrailer() {
     const trailer = new THREE.Object3D();
     addBox(trailer, 0, 0, 0);
@@ -97,27 +96,27 @@ function createTrailer() {
 
 function addBox(obj, x, y, z) {
     'use strict';
-    const box = new THREE.BoxGeometry(48, 18, 12);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    const mesh = new THREE.Mesh(box, material);
+    const box = new THREE.BoxGeometry(lTrailer, hTrailer, dTrailer);
+    trailerBoxMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    const mesh = new THREE.Mesh(box, trailerBoxMaterial);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function addWheel(obj, x, y, z) {
     'use strict';
-    const wheel = new THREE.CylinderGeometry(4, 4, 1);
+    const wheel = new THREE.CylinderGeometry(rTrailerWheel, rTrailerWheel, hTrailerWheel, radialSegments);
     wheel.rotateX(Math.PI/2);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    const mesh = new THREE.Mesh(wheel, material);
+    trailerWheelMaterial= new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+    const mesh = new THREE.Mesh(wheel, trailerWheelMaterial);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function addConnector(obj, x, y, z) {
     'use strict';
-    const connector = new THREE.CylinderGeometry(2, 2, 2);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    const connector = new THREE.CylinderGeometry(rTrailerConnector, rTrailerConnector, hTrailerConnector, radialSegments);
+    const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
     const mesh = new THREE.Mesh(connector, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -169,6 +168,8 @@ function init() {
 
     render();
 
+    materials = [trailerBoxMaterial, trailerWheelMaterial];
+    
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("resize", onResize);
 }
