@@ -1,7 +1,7 @@
-//////////////////////
+//////////////////////tempcam
 /* GLOBAL VARIABLES */
 //////////////////////
-var camera, renderer, scene;
+var mainCamera, renderer, scene, cameras;
 
 
 /////////////////////
@@ -10,7 +10,7 @@ var camera, renderer, scene;
 function createScene(){
     'use strict';
 
-    const backgroundColor = new THREE.Color('skyblue');
+    const backgroundColor = new THREE.Color('rgb(200, 255, 255)');
 
     scene = new THREE.Scene();
     scene.background = backgroundColor;
@@ -22,17 +22,63 @@ function createScene(){
 //////////////////////
 function createCamera() {
     'use strict';
+    cameras = [];
     /*camera = new THREE.OrtographicCamera(window.innerWidth / - 2, window.innerWidth / 2, 
                                             window.innerHeight / 2, window.innerHeight / - 2, 
                                             1, 1000 );*/
-    camera = new THREE.PerspectiveCamera(70,
+    var tempCamera;
+    tempCamera = new THREE.PerspectiveCamera(70,
                                          window.innerWidth / window.innerHeight,
                                          1,
                                          1000);
-    camera.position.x = 50;
-    camera.position.y = 50;
-    camera.position.z = 50;
-    camera.lookAt(scene.position);
+    tempCamera.position.x = 50;
+    tempCamera.position.y = 50;
+    tempCamera.position.z = 50;
+    tempCamera.lookAt(scene.position);
+    cameras.push(tempCamera);
+
+    mainCamera = tempCamera;
+
+    tempCamera = new THREE.PerspectiveCamera(70,
+                                         window.innerWidth / window.innerHeight,
+                                         1,
+                                         1000);
+    tempCamera.position.x = 70;
+    tempCamera.position.y = 50;
+    tempCamera.position.z = 50;
+    tempCamera.lookAt(scene.position);
+    cameras.push(tempCamera);
+
+    tempCamera = new THREE.PerspectiveCamera(70,
+                                         window.innerWidth / window.innerHeight,
+                                         1,
+                                         1000);
+    tempCamera.position.x = 90;
+    tempCamera.position.y = 50;
+    tempCamera.position.z = 50;
+    tempCamera.lookAt(scene.position);
+    cameras.push(tempCamera);
+
+    tempCamera = new THREE.PerspectiveCamera(70,
+                                         window.innerWidth / window.innerHeight,
+                                         1,
+                                         1000);
+    tempCamera.position.x = 30;
+    tempCamera.position.y = 50;
+    tempCamera.position.z = 50;
+    tempCamera.lookAt(scene.position);
+    cameras.push(tempCamera);
+
+    tempCamera = new THREE.PerspectiveCamera(70,
+                                         window.innerWidth / window.innerHeight,
+                                         1,
+                                         1000);
+    tempCamera.position.x = 10;
+    tempCamera.position.y = 50;
+    tempCamera.position.z = 50;
+    tempCamera.lookAt(scene.position);
+    cameras.push(tempCamera);
+    console.log(cameras)
 }
 
 /////////////////////
@@ -72,8 +118,7 @@ function update(){
 /////////////
 function render() {
     'use strict';
-    
-    renderer.render(scene, camera);
+    renderer.render(scene, mainCamera);
 }
 
 ////////////////////////////////
@@ -90,6 +135,9 @@ function init() {
     createCamera();
 
     render();
+
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onResize);
 }
 
 /////////////////////
@@ -97,7 +145,9 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
-
+    update();
+    render();
+    requestAnimationFrame(animate);
 }
 
 ////////////////////////////
@@ -113,7 +163,9 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-
+    if (49 <= e.keyCode && e.keyCode <= 53) {
+        mainCamera = cameras[e.keyCode - 49];
+    }
 }
 
 ///////////////////////
