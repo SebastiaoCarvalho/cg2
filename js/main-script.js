@@ -92,10 +92,10 @@ function createTrailer() {
     const trailer = new THREE.Object3D();
     addBox(trailer, 0, 0, 0);
     
-    addWheel(trailer, 19 ,-9, 6)
-    addWheel(trailer, 10, -9, 6);
-    addWheel(trailer, 19, -9, -6);
-    addWheel(trailer, 10, -9, -6);
+    addWheel(trailer, lTrailer/2 - 5 ,-hTrailer/2, dTrailer/2)
+    addWheel(trailer, lTrailer/2 - 14, -hTrailer/2, dTrailer/2);
+    addWheel(trailer, lTrailer/2 - 5, -hTrailer/2, -dTrailer/2);
+    addWheel(trailer, lTrailer/2 - 14, -hTrailer/2, -dTrailer/2);
 
     addConnector(trailer, -19, -9 - 1 , 0);
 
