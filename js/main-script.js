@@ -79,7 +79,15 @@ function createCamera() {
     tempCamera.position.set(distance,distance,distance);
     tempCamera.lookAt(scene.position);
     cameras.push(tempCamera); 
-}material
+}
+
+/////////////////////
+/* CREATE LIGHT(S) */
+/////////////////////
+
+////////////////////////
+/* CREATE OBJECT3D(S) */
+////////////////////////
 function createTrailer() {
     const trailer = new THREE.Object3D();
     addBox(trailer, 0, 0, 0);
