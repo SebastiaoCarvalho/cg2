@@ -95,6 +95,35 @@ function createCamera() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+
+function createHead() {
+    'use strict'
+    var g0 ,material, geometry;
+
+    //Create cube for head
+    geometry = new THREE.BoxGeometry(4,4,3);
+    material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
+    const head = new THREE.Mesh(geometry, material);
+
+    //Create sphere for right eye
+    geometry = new THREE.SphereGeometry(0.5,100,100);
+    material = new THREE.MeshBasicMaterial( {color: 0x000000} ); 
+    const rightEye = new THREE.Mesh(geometry, material);
+    rightEye.position.set(1.5,1,1.5);
+
+    //Create sphere for right eye
+    const leftEye = new THREE.Mesh(geometry, material);
+    leftEye.position.set(-1.5,1,1.5);
+
+    //Create sphere for left eye
+    g0 = new THREE.Object3D();
+    g0.add(head);
+    g0.add(rightEye);
+    g0.add(leftEye);
+    
+    return g0;
+}
+
 function createTrailer() {
     trailer = new THREE.Object3D();
     addBox(trailer, 0, 0, 0);
