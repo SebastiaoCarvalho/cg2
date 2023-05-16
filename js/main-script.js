@@ -16,43 +16,43 @@ const step = 10;
 var geometry, material, mesh;
 
 /* Waist */
-var lWaist=10, hWaist=5, dWaist=5;
+const lWaist=10, hWaist=5, dWaist=5;
 
 /* Abdomen */
-var lAbdomen=4, hAbdomen=3, dAbdomen=3;
+const lAbdomen=4, hAbdomen=3, dAbdomen=3;
 
 /* Chest */
-var lChest=10, hChest=9, dChest=5;
+const lChest=10, hChest=9, dChest=5;
 
 /* Wheel */
-var rWheel=1.5, hWheel=1;
+const rWheel=1.5, hWheel=1;
 
 /* Arm */
-var lArm=5, hArm=12, dArm=3;
+const lArm=5, hArm=12, dArm=3;
 
 /* Forearm */
-var lForearm=3, hForearm=3, dForearm=5;
+const lForearm=3, hForearm=3, dForearm=5;
 
 /* Tube */
-var rTube=0.5, hTube=13;
+const rTube=0.5, hTube=13;
 
 /* Head */
-var lHead=4, hHead=4, dHead=3;
+const lHead=4, hHead=4, dHead=3;
 
 /* Eye */
-var rEye=0.5;
+const rEye=0.5;
 
 /* Antena */
-var rAntena=0.5, hAntena=1;
+const rAntena=0.5, hAntena=1;
 
 /* Thigh */
-var lThigh=3, hThigh=4, dThigh=3;
+const lThigh=3, hThigh=4, dThigh=3;
 
 /* Leg */
-var lLeg=5, hLeg=13, dLeg=5;
+const lLeg=5, hLeg=13, dLeg=5;
 
 /* Foot */
-var lFoot=5, hFoot=3, dFoot=3;
+const lFoot=5, hFoot=3, dFoot=3;
 
 /* Size constants */
 const lTrailer = 48, hTrailer = 18, dTrailer = 12;
