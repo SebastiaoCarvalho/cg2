@@ -13,6 +13,47 @@ var trailer;
 
 const step = 10;
 
+var geometry, material, mesh;
+
+/* Waist */
+var lWaist=10, hWaist=5, dWaist=5;
+
+/* Abdomen */
+var lAbdomen=4, hAbdomen=3, dAbdomen=3;
+
+/* Chest */
+var lChest=10, hChest=9, dChest=5;
+
+/* Wheel */
+var rWheel=1.5, hWheel=1;
+
+/* Arm */
+var lArm=5, hArm=12, dArm=3;
+
+/* Forearm */
+var lForearm=3, hForearm=3, dForearm=5;
+
+/* Tube */
+var rTube=0.5, hTube=13;
+
+/* Head */
+var lHead=4, hHead=4, dHead=3;
+
+/* Eye */
+var rEye=0.5;
+
+/* Antena */
+var rAntena=0.5, hAntena=1;
+
+/* Thigh */
+var lThigh=3, hThigh=4, dThigh=3;
+
+/* Leg */
+var lLeg=5, hLeg=13, dLeg=5;
+
+/* Foot */
+var lFoot=5, hFoot=3, dFoot=3;
+
 /* Size constants */
 const lTrailer = 48, hTrailer = 18, dTrailer = 12;
 const rTrailerWheel = 4, hTrailerWheel = 1;
@@ -32,6 +73,7 @@ function createScene(){
     scene.add(new THREE.AxisHelper(10));
 
     createTrailer();
+    createRobot(0, 0, 0);
 }
 
 //////////////////////
@@ -96,42 +138,97 @@ function createCamera() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-function createHead() {
+/* Create Robot */
+function createRobot(x, y, z){
     'use strict'
-    var g0 ,material, geometry;
+    var robot = new THREE.Object3D();
+    robot.position.set(x, y, z);
 
-    //Create cube for head
-    geometry = new THREE.BoxGeometry(4,4,3);
-    material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
-    const head = new THREE.Mesh(geometry, material);
+    addWaist(robot, 0, 0, 0);
+    addAbdomen(robot, 0, hWaist/2 + hAbdomen/2, 0);
+    addChest(robot, 0, hWaist/2 + hAbdomen + hChest/2, 0);
+    addWheel(robot, lWaist/2 + hWheel/2, 0, 0);
+    addWheel(robot, -lWaist/2 - hWheel/2, 0, 0);
 
-    //Create sphere for right eye
-    geometry = new THREE.SphereGeometry(0.5,100,100);
-    material = new THREE.MeshBasicMaterial( {color: 0x000000} ); 
-    const rightEye = new THREE.Mesh(geometry, material);
-    rightEye.position.set(1.5,1,1.5);
+    /* Head */
+    var head = new THREE.Object3D();
+    head.add(new THREE.AxesHelper(5));
+    robot.add(head);
+    var xHead = 0;
+    var yHead = hWaist/2 + hAbdomen + hChest;
+    var zHead = 0;
+    head.position.set(xHead, yHead, zHead);
 
-    //Create sphere for right eye
-    const leftEye = new THREE.Mesh(geometry, material);
-    leftEye.position.set(-1.5,1,1.5);
+    addHead(head, 0, hHead/2, 0);
+    addEye(head, lHead/2 - rEye, hHead*5/8, -dHead/2);
+    addEye(head, -lHead/2 + rEye, hHead*5/8, -dHead/2);
+    addAntena(head, lHead/2 - rAntena, hHead + hAntena/2, 0);
+    addAntena(head, -lHead/2 + rAntena, hHead + hAntena/2, 0);
 
-    //Create sphere for left eye
-    g0 = new THREE.Object3D();
-    g0.add(head);
-    g0.add(rightEye);
-    g0.add(leftEye);
-    
-    return g0;
+    /* Left Arm */
+    var armLeft = new THREE.Object3D();
+    armLeft.add(new THREE.AxesHelper(5));
+    robot.add(armLeft);
+    var xLeftArm = x + (lWaist/2 + lArm/10);
+    var yLeftArm = y + (hWaist/2 + (hAbdomen+hChest)/2);
+    var zLeftArm = z + (dWaist/2 + dArm/2);
+    armLeft.position.set(xLeftArm, yLeftArm, zLeftArm);
+
+    addArm(armLeft, 0, 0, 0);
+    addForearm(armLeft, lArm/5, -hArm/2 + hForearm/2, -dArm/2 - dForearm/2);
+    addTube(armLeft, lArm/5, hArm/8, dArm/2 + rTube);
+
+    /* Right Arm */
+    var armRight = new THREE.Object3D();
+    armRight.add(new THREE.AxesHelper(5));
+    robot.add(armRight);
+    var xRightArm = x - (lWaist/2 + lArm/10);
+    var yRightArm = y + (hWaist/2 + (hAbdomen+hChest)/2);
+    var zRightArm = z + (dWaist/2 + dArm/2);
+    armRight.position.set(xRightArm, yRightArm, zRightArm);
+
+    addArm(armRight, 0, 0, 0);
+    addForearm(armRight, -lArm/5, -hArm/2 + hForearm/2, -dArm/2 - dForearm/2);
+    addTube(armRight, -lArm/5, hArm/8, dArm/2 + rTube);
+
+    /* Legs */
+    var legs = new THREE.Object3D();
+    legs.add(new THREE.AxesHelper(5));
+    robot.add(legs);
+    /* Same Axis as Father */
+
+    addThigh(legs, lWaist/4, -hWaist/2 - hThigh/2, 0);
+    addThigh(legs, -lWaist/4, -hWaist/2 - hThigh/2, 0);
+    addLeg(legs, lWaist/4, -hWaist/2 - hThigh - hLeg/2, 0);
+    addLeg(legs, -lWaist/4, -hWaist/2 - hThigh - hLeg/2, 0);
+    addWheel(legs, lWaist/2 + hWheel/2, -hWaist/2 - hThigh - hLeg/2.6, 0);
+    addWheel(legs, -lWaist/2 - hWheel/2, -hWaist/2 - hThigh - hLeg/2.6, 0);
+    addWheel(legs, lWaist/2 + hWheel/2, -hWaist/2 - hThigh - hLeg/1.3, 0);
+    addWheel(legs, -lWaist/2 - hWheel/2, -hWaist/2 - hThigh - hLeg/1.3, 0);
+
+    /* Feet */
+    var feet = new THREE.Object3D();
+    feet.add(new THREE.AxesHelper(5));
+    legs.add(feet);
+    var xFeet = x;
+    var yFeet = y - (hWaist/2 + hThigh + hLeg);
+    var zFeet = z - (dLeg/2);
+    feet.position.set(xFeet, yFeet, zFeet);
+
+    addFoot(feet, lFoot/2, hFoot/2, -dFoot/2);
+    addFoot(feet, -lFoot/2, hFoot/2, -dFoot/2);
+
+    scene.add(robot);
 }
 
 function createTrailer() {
     trailer = new THREE.Object3D();
     addBox(trailer, 0, 0, 0);
     
-    addWheel(trailer, lTrailer/2 - 5 ,-hTrailer/2, dTrailer/2)
-    addWheel(trailer, lTrailer/2 - 14, -hTrailer/2, dTrailer/2);
-    addWheel(trailer, lTrailer/2 - 5, -hTrailer/2, -dTrailer/2);
-    addWheel(trailer, lTrailer/2 - 14, -hTrailer/2, -dTrailer/2);
+    addTWheel(trailer, lTrailer/2 - 5 ,-hTrailer/2, dTrailer/2)
+    addTWheel(trailer, lTrailer/2 - 14, -hTrailer/2, dTrailer/2);
+    addTWheel(trailer, lTrailer/2 - 5, -hTrailer/2, -dTrailer/2);
+    addTWheel(trailer, lTrailer/2 - 14, -hTrailer/2, -dTrailer/2);
 
     addConnector(trailer, -19, -9 - 1 , 0);
 
@@ -143,6 +240,40 @@ function addBox(obj, x, y, z) {
     const box = new THREE.BoxGeometry(lTrailer, hTrailer, dTrailer);
     trailerBoxMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
     const mesh = new THREE.Mesh(box, trailerBoxMaterial);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addWaist(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lWaist, hWaist, dWaist);
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addAbdomen(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lAbdomen, hAbdomen, dAbdomen);
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addChest(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lChest, hChest, dChest);
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -153,6 +284,7 @@ function addWheel(obj, x, y, z) {
     wheel.rotateX(Math.PI/2);
     trailerWheelMaterial= new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
     const mesh = new THREE.Mesh(wheel, trailerWheelMaterial);
+
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -162,9 +294,120 @@ function addConnector(obj, x, y, z) {
     const connector = new THREE.CylinderGeometry(rTrailerConnector, rTrailerConnector, hTrailerConnector, radialSegments);
     const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
     const mesh = new THREE.Mesh(connector, material);
+
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
+
+function addHead(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lHead, hHead, dHead);
+    material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addEye(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.SphereGeometry(rEye, 32, 32);
+    material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addAntena(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.CylinderGeometry(rAntena, rAntena, hAntena, 32);
+    material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addArm(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lArm, hArm, dArm);
+    material = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addForearm(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lForearm, hForearm, dForearm);
+    material = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addTube(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.CylinderGeometry(rTube, rTube, hTube, 32);
+    material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addThigh(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lThigh, hThigh, dThigh);
+    material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addLeg(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lLeg, hLeg, dLeg);
+    material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addFoot(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(lFoot, hFoot, dFoot);
+    material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addTWheel(obj, x, y, z) {
+    geometry = new THREE.CylinderGeometry(rWheel, rWheel, hWheel, 32);
+    geometry.rotateZ(Math.PI/2);
+    material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
