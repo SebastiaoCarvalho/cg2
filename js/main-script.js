@@ -1,7 +1,8 @@
 //////////////////////tempcam
 /* GLOBAL VARIABLES */
 //////////////////////
-var mainCamera, renderer, scene, cameras;
+var mainCamera, cameras;
+var renderer, scene;
 
 
 /////////////////////
@@ -22,63 +23,55 @@ function createScene(){
 //////////////////////
 function createCamera() {
     'use strict';
-    cameras = [];
-    /*camera = new THREE.OrtographicCamera(window.innerWidth / - 2, window.innerWidth / 2, 
-                                            window.innerHeight / 2, window.innerHeight / - 2, 
-                                            1, 1000 );*/
+    
+    const aspect = window.innerWidth / window.innerHeight;
+    const fov = 70;
+    const near = 1;
+    const far = 1000;
+    const distance = 50;
     var tempCamera;
-    tempCamera = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    tempCamera.position.x = 50;
-    tempCamera.position.y = 50;
-    tempCamera.position.z = 50;
+    cameras = [];
+    
+    tempCamera = new THREE.PerspectiveCamera(fov,
+                                            aspect,
+                                            near,
+                                            far);
+    tempCamera.position.set(distance,0,0);
     tempCamera.lookAt(scene.position);
-    cameras.push(tempCamera);
-
+    tempCamera.push(cameras);
+    
     mainCamera = tempCamera;
-
-    tempCamera = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    tempCamera.position.x = 70;
-    tempCamera.position.y = 50;
-    tempCamera.position.z = 50;
+    
+    tempCamera = new THREE.PerspectiveCamera(fov,
+                                            aspect,
+                                            near,
+                                            far);
+    tempCamera.position.set(0,0,distance);
     tempCamera.lookAt(scene.position);
-    cameras.push(tempCamera);
+    tempCamera.push(cameras);
 
-    tempCamera = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    tempCamera.position.x = 90;
-    tempCamera.position.y = 50;
-    tempCamera.position.z = 50;
+    tempCamera = new THREE.PerspectiveCamera(fov,
+                                            aspect,
+                                            near,
+                                            far);
+    tempCamera.position.set(0,distance,0);
     tempCamera.lookAt(scene.position);
-    cameras.push(tempCamera);
+    tempCamera.push(cameras);
+    
+    tempCamera = new THREE.OrthographicCamera( - distance * aspect, 
+                                                    distance * aspect, 
+                                                    distance, - distance, 1, 1000 );
+    tempCamera.position.set( distance, distance, distance); 
+    tempCamera.lookAt(scene.position);
+    tempCamera.push(cameras);
 
-    tempCamera = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    tempCamera.position.x = 30;
-    tempCamera.position.y = 50;
-    tempCamera.position.z = 50;
+    tempCamera = new THREE.PerspectiveCamera(fov,
+                                                    aspect,
+                                                    near,
+                                                    far); 
+    tempCamera.position.set(distance,distance,distance);
     tempCamera.lookAt(scene.position);
-    cameras.push(tempCamera);
-
-    tempCamera = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    tempCamera.position.x = 10;
-    tempCamera.position.y = 50;
-    tempCamera.position.z = 50;
-    tempCamera.lookAt(scene.position);
-    cameras.push(tempCamera);
-    console.log(cameras)
+    tempCamera.push(cameras); 
 }
 
 /////////////////////
