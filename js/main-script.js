@@ -38,7 +38,7 @@ function createCamera() {
                                             far);
     tempCamera.position.set(distance,0,0);
     tempCamera.lookAt(scene.position);
-    tempCamera.push(cameras);
+    cameras.push(tempCamera);
     
     mainCamera = tempCamera;
     
@@ -48,7 +48,7 @@ function createCamera() {
                                             far);
     tempCamera.position.set(0,0,distance);
     tempCamera.lookAt(scene.position);
-    tempCamera.push(cameras);
+    cameras.push(tempCamera);
 
     tempCamera = new THREE.PerspectiveCamera(fov,
                                             aspect,
@@ -56,14 +56,14 @@ function createCamera() {
                                             far);
     tempCamera.position.set(0,distance,0);
     tempCamera.lookAt(scene.position);
-    tempCamera.push(cameras);
+    cameras.push(tempCamera);
     
     tempCamera = new THREE.OrthographicCamera( - distance * aspect, 
                                                     distance * aspect, 
                                                     distance, - distance, 1, 1000 );
     tempCamera.position.set( distance, distance, distance); 
     tempCamera.lookAt(scene.position);
-    tempCamera.push(cameras);
+    cameras.push(tempCamera);
 
     tempCamera = new THREE.PerspectiveCamera(fov,
                                                     aspect,
@@ -71,7 +71,7 @@ function createCamera() {
                                                     far); 
     tempCamera.position.set(distance,distance,distance);
     tempCamera.lookAt(scene.position);
-    tempCamera.push(cameras); 
+    cameras.push(tempCamera); 
 }
 
 /////////////////////
