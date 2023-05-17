@@ -105,7 +105,6 @@ function createTrailer() {
     addWheel(trailer, lTrailer/2 - 14, -hTrailer/2, -dTrailer/2);
 
     addConnector(trailer, -19, -9 - 1 , 0);
-
     scene.add(trailer);
 }
 
@@ -141,7 +140,18 @@ function addConnector(obj, x, y, z) {
 //////////////////////
 function checkCollisions(){
     'use strict';
-
+    const margin = 2;
+    const trailerXMin = trailer.position.x - lTrailer/2 - margin;
+    console.log(trailerXMin);
+    const trailerXMax = trailer.position.x + lTrailer/2 + margin;
+    console.log(trailerXMax);
+    const trialerYMin = trailer.position.y - hTrailer/2 - margin;
+    const trailerYMax = trailer.position.y + hTrailer/2 + margin;
+    const trailerZMin = trailer.position.z - dTrailer/2 - margin;
+    const trailerZMax = trailer.position.z + dTrailer/2 + margin;
+    
+    
+    
 }
 
 ///////////////////////
@@ -165,6 +175,8 @@ function update(){
     if (rightArrowPressed) trailer.position.x += velocityValue * deltaTime;
     if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
     if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
+
+    checkCollisions();
 }
 
 /////////////
