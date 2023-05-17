@@ -111,7 +111,7 @@ function createCamera() {
     const fov = 70;
     const near = 1;
     const far = 1000;
-    const distance = 20;
+    const distance = 30;
     var tempCamera;
     cameras = [];
     
@@ -206,7 +206,7 @@ function createRobot(x, y, z){
     armRight.userData = { movingIn: false, movingOut: false};
     armRight.add(new THREE.AxesHelper(5));
     robot.add(armRight);
-    var xRightArm = lWaist/2 + lArm/10;
+    var xRightArm = -lWaist/2 - lArm/10;
     var yRightArm = hWaist/2 + (hAbdomen+hChest)/2;
     var zRightArm = -dWaist/2 - dArm/2;
     armRight.position.set(xRightArm, yRightArm, zRightArm);
@@ -606,65 +606,49 @@ function onKeyDown(e) {
         case 40:    // down arrow
             downArrowPressed = true;
             break;
-    } 
-    // number 6
-    if (54 == e.keyCode) {
-        wireframing = !wireframing;
-    }
-    // letter Q/q
-    else if (e.keyCode == 81) {
-        feet.userData.rotatingUp = true;
-    }
-    // letter A/a
-    else if (e.keyCode == 65) {
-        feet.userData.rotatingDown = true;
-    }
-    // letter R/r 
-    else if (e.keyCode == 82) {
-        head.userData.rotatingUp = true;
-    }
-    // letter F/f
-    else if (e.keyCode == 70) {
-        head.userData.rotatingDown = true;
-    }
-     //W
-     if (87 == e.keyCode) {
-        legs.userData.rotatingUp = true;
-    }
-
-    //S
-    if (83 == e.keyCode) {
-        legs.userData.rotatingDown = true;
-    }
-
-    //E
-    if (69 == e.keyCode) {
-        armLeft.userData.movingIn = true;
-        armRight.userData.movingIn = true;
-    }
-
-    //D
-    if (68 == e.keyCode) {
-        armLeft.userData.movingOut = true;
-        armRight.userData.movingOut = true;
-    }
-
-    //O
-    if (79 == e.keyCode) {
-        head.userData.rotatingUp = true;
-        feet.userData.rotatingUp = true;
-        legs.userData.rotatingUp = true;
-        armLeft.userData.movingIn = true;
-        armRight.userData.movingIn = true;
-    }
-
-    //L
-    if (76 == e.keyCode) {
-        head.userData.rotatingDown = true;
-        feet.userData.rotatingDown = true;
-        legs.userData.rotatingDown = true;
-        armLeft.userData.movingOut = true;
-        armRight.userData.movingOut = true;
+        case 54:    // number 6
+            wireframing = !wireframing;
+            break;
+        case 65:    // letter A/a
+            feet.userData.rotatingDown = true;
+            break;
+        case 68:    // letter D/d
+            armLeft.userData.movingOut = true;
+            armRight.userData.movingOut = true;
+            break;
+        case 69:    // letter E/e
+            armLeft.userData.movingIn = true;
+            armRight.userData.movingIn = true;
+            break;
+        case 70:    // letter F/f
+            head.userData.rotatingDown = true;
+            break;
+        case 76:    // letter L/l
+            head.userData.rotatingDown = true;
+            feet.userData.rotatingDown = true;
+            legs.userData.rotatingDown = true;
+            armLeft.userData.movingOut = true;
+            armRight.userData.movingOut = true;
+            break;
+        case 79:    // letter O/o
+            head.userData.rotatingUp = true;
+            feet.userData.rotatingUp = true;
+            legs.userData.rotatingUp = true;
+            armLeft.userData.movingIn = true;
+            armRight.userData.movingIn = true;
+            break;
+        case 81:    // letter Q/q
+            feet.userData.rotatingUp = true;
+            break;
+        case 82:    // letter R/r 
+            head.userData.rotatingUp = true;
+            break;
+        case 83:    // letter E/e
+            legs.userData.rotatingDown = true;
+            break;
+        case 87:    // letter W/w
+            legs.userData.rotatingUp = true;
+            break;
     }
 }
 
@@ -686,62 +670,45 @@ function onKeyUp(e){
         case 40:    // down arrow
             downArrowPressed = false;
             break;
+        case 65:    // letter A/a
+            feet.userData.rotatingDown = false;
+            break;
+        case 68:    // letter D/d
+            armLeft.userData.movingOut = false;
+            armRight.userData.movingOut = false;
+            break;
+        case 69:    // letter E/e
+            armLeft.userData.movingIn = false;
+            armRight.userData.movingIn = false;
+            break;
+        case 70:    // letter F/f
+            head.userData.rotatingDown = false;
+            break;
+        case 76:    // letter L/l
+            head.userData.rotatingDown = false;
+            feet.userData.rotatingDown = false;
+            legs.userData.rotatingDown = false;
+            armLeft.userData.movingOut = false;
+            armRight.userData.movingOut = false;
+            break;
+        case 79:    // letter O/o
+            head.userData.rotatingUp = false;
+            feet.userData.rotatingUp = false;
+            legs.userData.rotatingUp = false;
+            armLeft.userData.movingIn = false;
+            armRight.userData.movingIn = false;
+            break;
+        case 81:    // letter Q/q
+            feet.userData.rotatingUp = false;
+            break;
+        case 82:    // letter R/r 
+            head.userData.rotatingUp = false;
+            break;
+        case 83:    // letter E/e
+            legs.userData.rotatingDown = false;
+            break;
+        case 87:    // letter W/w
+            legs.userData.rotatingUp = false;
+            break;
     }
-
-    // letter Q/q
-    if (e.keyCode == 81) {
-        feet.userData.rotatingUp = false;
-    }
-    // letter A/a
-    else if (e.keyCode == 65) {
-        feet.userData.rotatingDown = false;
-    } 
-    // letter R/r 
-    else if (e.keyCode == 82) {
-        head.userData.rotatingUp = false;
-    }
-    // letter F/f
-    else if (e.keyCode == 70) {
-        head.userData.rotatingDown = false;
-    }
-    //W
-    if (87 == e.keyCode) {
-        legs.userData.rotatingUp = false;
-    }
-
-    //S
-    if (83 == e.keyCode) {
-        legs.userData.rotatingDown = false;
-    }
-
-    //E
-    if (69 == e.keyCode) {
-        armLeft.userData.movingIn = false;
-        armRight.userData.movingIn = false;
-    }
-
-    //D
-    if (68 == e.keyCode) {
-        armLeft.userData.movingOut = false;
-        armRight.userData.movingOut = false;
-    }
-
-    //O
-    if (79 == e.keyCode) {
-        head.userData.rotatingUp = false;
-        feet.userData.rotatingUp = false;
-        legs.userData.rotatingUp = false;
-        armLeft.userData.movingIn = false;
-        armRight.userData.movingIn = false;
-    }
-
-    //L
-    if (76 == e.keyCode) {
-        head.userData.rotatingDown = false;
-        feet.userData.rotatingDown = false;
-        legs.userData.rotatingDown = false;
-        armLeft.userData.movingOut = false;
-        armRight.userData.movingOut = false;
-    }
-
 }
