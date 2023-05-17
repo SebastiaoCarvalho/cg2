@@ -18,6 +18,9 @@ var wireframing = true;
 /* Robot */
 var robot, head, armLeft, armRight, legs, feet;
 
+/* Trailer */
+var trailer;
+
 /* Waist */
 const lWaist=10, hWaist=5, dWaist=5;
 var waistMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700, wireframe: wireframing });
@@ -75,6 +78,9 @@ const rTrailerConnector = 1, hTrailerConnector = 2;
 /* radialSegments */
 const radialSegments = 32;
 
+const rotationIncrement = Math.PI/128;
+const translationIncrement = 0.05;
+
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -87,7 +93,7 @@ function createScene(){
     scene.background = backgroundColor;
     scene.add(new THREE.AxisHelper(10));
 
-    createTrailer(0, 0, -40);
+    createTrailer(0, 0, -50);
     createRobot(0, 0, 0);
 }
 
@@ -162,24 +168,24 @@ function createRobot(x, y, z){
     addWaist(robot, 0, 0, 0);
     addAbdomen(robot, 0, hWaist/2 + hAbdomen/2, 0);
     addChest(robot, 0, hWaist/2 + hAbdomen + hChest/2, 0);
-    addWheel(robot, lWaist/2 + hWheel/2, 0, 0);
-    addWheel(robot, -lWaist/2 - hWheel/2, 0, 0);
+    addWheel(robot, lWaist/2 + hWheel/2, -hWaist/2, 0);
+    addWheel(robot, -lWaist/2 - hWheel/2, -hWaist/2, 0);
 
     /* Head */
     head = new THREE.Object3D();
-    head.userData = { up: false, down: false };
+    head.userData = { rotatingUp: false, rotatingDown: false };
     head.add(new THREE.AxesHelper(5));
     robot.add(head);
     var xHead = 0;
-    var yHead = hWaist/2 + hAbdomen + hChest;
+    var yHead = hWaist/2 + hAbdomen + hChest - 0.1;
     var zHead = 0;
     head.position.set(xHead, yHead, zHead);
 
-    addHead(head, 0, hHead/2, 0);
-    addEye(head, lHead/2 - rEye, hHead-3*rEye, dHead/2);
-    addEye(head, -lHead/2 + rEye, hHead-3*rEye, dHead/2);
-    addAntena(head, lHead/2 - rAntena, hHead + hAntena/2, 0);
-    addAntena(head, -lHead/2 + rAntena, hHead + hAntena/2, 0);
+    addHead(head, 0, hHead/2 + 0.1, 0);
+    addEye(head, lHead/2 - rEye, hHead-3*rEye + 0.1, dHead/2);
+    addEye(head, -lHead/2 + rEye, hHead-3*rEye + 0.1, dHead/2);
+    addAntena(head, lHead/2 - rAntena, hHead + hAntena/2 + 0.1, 0);
+    addAntena(head, -lHead/2 + rAntena, hHead + hAntena/2 + 0.1, 0);
 
     /* Left Arm */
     armLeft = new THREE.Object3D();
@@ -220,14 +226,14 @@ function createRobot(x, y, z){
     addThigh(legs, -lWaist/4, -hWaist/2 - hThigh/2, 0);
     addLeg(legs, lWaist/4, -hWaist/2 - hThigh - hLeg/2, 0);
     addLeg(legs, -lWaist/4, -hWaist/2 - hThigh - hLeg/2, 0);
-    addWheel(legs, lWaist/2 + hWheel/2, -hWaist/2 - hThigh - hLeg + 2 + 2*rWheel + 2 + rWheel, 0);
-    addWheel(legs, -lWaist/2 - hWheel/2, -hWaist/2 - hThigh - hLeg + 2 + 2*rWheel + 2 + rWheel, 0);
-    addWheel(legs, lWaist/2 + hWheel/2, -hWaist/2 - hThigh - hLeg + 2 + rWheel, 0);
-    addWheel(legs, -lWaist/2 - hWheel/2, -hWaist/2 - hThigh - hLeg +2 + rWheel, 0);
+    addWheel(legs, lWaist/2 + hWheel/2, -hWaist/2 - hThigh - hLeg + 2 + 2*rWheel + 2 + rWheel, dLeg/2);
+    addWheel(legs, -lWaist/2 - hWheel/2, -hWaist/2 - hThigh - hLeg + 2 + 2*rWheel + 2 + rWheel, dLeg/2);
+    addWheel(legs, lWaist/2 + hWheel/2, -hWaist/2 - hThigh - hLeg + 2 + rWheel, dLeg/2);
+    addWheel(legs, -lWaist/2 - hWheel/2, -hWaist/2 - hThigh - hLeg +2 + rWheel, dLeg/2);
 
     /* Feet */
     feet = new THREE.Object3D();
-    feet.userData = { up: false, down: false };
+    feet.userData = { rotatingUp: false, rotatingDown: false };
     feet.add(new THREE.AxesHelper(5));
     legs.add(feet);
     var xFeet = x;
@@ -244,8 +250,8 @@ function createRobot(x, y, z){
 function addWaist(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lWaist, hWaist, dWaist);
-    mesh = new THREE.Mesh(geometry, waistMaterial);
+    const geometry = new THREE.BoxGeometry(lWaist, hWaist, dWaist);
+    const mesh = new THREE.Mesh(geometry, waistMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -254,8 +260,8 @@ function addWaist(obj, x, y, z) {
 function addAbdomen(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lAbdomen, hAbdomen, dAbdomen);
-    mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
+    const geometry = new THREE.BoxGeometry(lAbdomen, hAbdomen, dAbdomen);
+    const mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -264,8 +270,8 @@ function addAbdomen(obj, x, y, z) {
 function addChest(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lChest, hChest, dChest);
-    mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
+    const geometry = new THREE.BoxGeometry(lChest, hChest, dChest);
+    const mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -273,9 +279,9 @@ function addChest(obj, x, y, z) {
 
 function addWheel(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.CylinderGeometry(rWheel, rWheel, hWheel, radialSegments);
+    const geometry = new THREE.CylinderGeometry(rWheel, rWheel, hWheel, radialSegments);
     geometry.rotateZ(Math.PI/2);
-    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
+    const mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -284,8 +290,8 @@ function addWheel(obj, x, y, z) {
 function addHead(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lHead, hHead, dHead);
-    mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
+    const geometry = new THREE.BoxGeometry(lHead, hHead, dHead);
+    const mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -294,8 +300,8 @@ function addHead(obj, x, y, z) {
 function addEye(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.SphereGeometry(rEye, radialSegments, radialSegments);
-    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
+    const geometry = new THREE.SphereGeometry(rEye, radialSegments, radialSegments);
+    const mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -304,8 +310,8 @@ function addEye(obj, x, y, z) {
 function addAntena(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.CylinderGeometry(rAntena, rAntena, hAntena, radialSegments);
-    mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
+    const geometry = new THREE.CylinderGeometry(rAntena, rAntena, hAntena, radialSegments);
+    const mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -314,8 +320,8 @@ function addAntena(obj, x, y, z) {
 function addArm(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lArm, hArm, dArm);
-    mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
+    const geometry = new THREE.BoxGeometry(lArm, hArm, dArm);
+    const mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -324,8 +330,8 @@ function addArm(obj, x, y, z) {
 function addForearm(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lForearm, hForearm, dForearm);
-    mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
+    const geometry = new THREE.BoxGeometry(lForearm, hForearm, dForearm);
+    const mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -334,8 +340,8 @@ function addForearm(obj, x, y, z) {
 function addTube(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.CylinderGeometry(rTube, rTube, hTube, radialSegments);
-    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
+    const geometry = new THREE.CylinderGeometry(rTube, rTube, hTube, radialSegments);
+    const mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -344,8 +350,8 @@ function addTube(obj, x, y, z) {
 function addThigh(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lThigh, hThigh, dThigh);
-    mesh = new THREE.Mesh(geometry, thighMaterial);
+    const geometry = new THREE.BoxGeometry(lThigh, hThigh, dThigh);
+    const mesh = new THREE.Mesh(geometry, thighMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -354,8 +360,8 @@ function addThigh(obj, x, y, z) {
 function addLeg(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lLeg, hLeg, dLeg);
-    mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
+    const geometry = new THREE.BoxGeometry(lLeg, hLeg, dLeg);
+    const mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -364,15 +370,15 @@ function addLeg(obj, x, y, z) {
 function addFoot(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.BoxGeometry(lFoot, hFoot, dFoot);
-    mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
+    const geometry = new THREE.BoxGeometry(lFoot, hFoot, dFoot);
+    const mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function createTrailer(x, y, z) {
-    const trailer = new THREE.Object3D();
+    trailer = new THREE.Object3D();
     trailer.position.set(x, y, z);
     //trailer.rotateY(Math.PI/2);
 
@@ -390,17 +396,17 @@ function createTrailer(x, y, z) {
 
 function addBox(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.BoxGeometry(lTrailer, hTrailer, dTrailer);
-    mesh = new THREE.Mesh(geometry, trailerMaterial);
+    const geometry = new THREE.BoxGeometry(lTrailer, hTrailer, dTrailer);
+    const mesh = new THREE.Mesh(geometry, trailerMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function addTWheel(obj, x, y, z) {
-    geometry = new THREE.CylinderGeometry(rTrailerWheel, rTrailerWheel, hTrailerWheel, radialSegments);
+    const geometry = new THREE.CylinderGeometry(rTrailerWheel, rTrailerWheel, hTrailerWheel, radialSegments);
     geometry.rotateZ(Math.PI/2);
-    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
+    const mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -408,8 +414,8 @@ function addTWheel(obj, x, y, z) {
 
 function addConnector(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.CylinderGeometry(rTrailerConnector, rTrailerConnector, hTrailerConnector, radialSegments);
-    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
+    const geometry = new THREE.CylinderGeometry(rTrailerConnector, rTrailerConnector, hTrailerConnector, radialSegments);
+    const mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -445,43 +451,67 @@ function update(){
     if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
     if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
 
-    if(legs.userData.rotatingUp && legs.rotation.x < Math.PI/2){
-        legs.rotateX(Math.PI/64);
+    if(legs.userData.rotatingUp){
+        if(legs.rotation.x + rotationIncrement <= Math.PI/2)
+            legs.rotateX(rotationIncrement);
+        else
+            legs.rotation.x = Math.PI/2;
     }
 
-    if(legs.userData.rotatingDown && legs.rotation.x > 0){
-        legs.rotateX(-Math.PI/64);
+    if(legs.userData.rotatingDown){
+        if(legs.rotation.x - rotationIncrement >= 0)
+            legs.rotateX(-rotationIncrement);
+        else
+            legs.rotation.x = 0;
     }
 
-    if(armRight.userData.movingIn && armLeft.userData.movingIn
-        && armRight.position.x < -lArm/2 && armLeft.position.x > lArm/2){
-        armRight.translateX(0.5);
-        armLeft.translateX(-0.5);
-    }
-    if (feet.userData.up) {
-        if  (feet.rotation.x > -Math.PI/2) {
-            feet.rotation.x -= 0.02;
+    if(armRight.userData.movingIn && armLeft.userData.movingIn){
+        if(armRight.position.x + translationIncrement<= -lArm/2 && armLeft.position.x + translationIncrement >= lArm/2){
+            armRight.translateX(translationIncrement);
+            armLeft.translateX(-translationIncrement);
+        }
+        else{
+            armRight.position.x = -lArm/2;
+            armLeft.position.x = lArm/2;
         }
     }
-    else if (feet.userData.down) {
-        if (feet.rotation.x < 0) {
-            feet.rotation.x += 0.02;
+    if(armRight.userData.movingOut && armLeft.userData.movingOut){
+        if(armRight.position.x + translationIncrement >= -lArm && armLeft.position.x + translationIncrement <= lArm){
+            armRight.translateX(-translationIncrement);
+            armLeft.translateX(translationIncrement);
+        }
+        else{
+            armRight.position.x = -lArm;
+            armLeft.position.x = lArm;
         }
     }
-    else if (head.userData.up) {
-        if  (head.rotation.x < Math.PI) {
-            head.rotation.x += 0.02;
-        }
+
+    if (feet.userData.rotatingUp) {
+        if (feet.rotation.x - rotationIncrement >= -Math.PI/2)
+            feet.rotateX(-rotationIncrement);
+        else
+            feet.rotation.x = -Math.PI/2;
     }
-    else if (head.userData.down) {
-        if (head.rotation.x > 0) {
-            head.rotation.x -= 0.02;
-        }
+
+    if (feet.userData.rotatingDown) {
+        if(feet.rotation.x + rotationIncrement <= 0)
+            feet.rotateX(rotationIncrement);
+        else
+            feet.rotation.x = 0;
     }
-    if(armRight.userData.movingOut && armLeft.userData.movingOut
-        && armRight.position.x > -lArm && armLeft.position.x < lArm){
-        armRight.translateX(-0.5);
-        armLeft.translateX(0.5);
+
+    if (head.userData.rotatingUp) {
+        if(head.rotation.x + rotationIncrement <= Math.PI)
+            head.rotateX(rotationIncrement);
+        else
+            head.rotation.x = Math.PI;
+    }
+
+    if (head.userData.rotatingDown) {
+        if(head.rotation.x - rotationIncrement >= 0)
+            head.rotateX(-rotationIncrement);
+        else
+            head.rotation.x = 0;
     }
 }
 
@@ -581,19 +611,19 @@ function onKeyDown(e) {
     }
     // letter Q/q
     else if (e.keyCode == 81) {
-        feet.userData.up = true;
+        feet.userData.rotatingUp = true;
     }
     // letter A/a
     else if (e.keyCode == 65) {
-        feet.userData.down = true;
+        feet.userData.rotatingDown = true;
     }
     // letter R/r 
     else if (e.keyCode == 82) {
-        head.userData.up = true;
+        head.userData.rotatingUp = true;
     }
     // letter F/f
     else if (e.keyCode == 70) {
-        head.userData.down = true;
+        head.userData.rotatingDown = true;
     }
      //W
      if (87 == e.keyCode) {
@@ -613,6 +643,24 @@ function onKeyDown(e) {
 
     //D
     if (68 == e.keyCode) {
+        armLeft.userData.movingOut = true;
+        armRight.userData.movingOut = true;
+    }
+
+    //O
+    if (79 == e.keyCode) {
+        head.userData.rotatingUp = true;
+        feet.userData.rotatingUp = true;
+        legs.userData.rotatingUp = true;
+        armLeft.userData.movingIn = true;
+        armRight.userData.movingIn = true;
+    }
+
+    //L
+    if (76 == e.keyCode) {
+        head.userData.rotatingDown = true;
+        feet.userData.rotatingDown = true;
+        legs.userData.rotatingDown = true;
         armLeft.userData.movingOut = true;
         armRight.userData.movingOut = true;
     }
@@ -636,22 +684,23 @@ function onKeyUp(e){
         case 40:    // down arrow
             downArrowPressed = false;
             break;
+    }
 
     // letter Q/q
     if (e.keyCode == 81) {
-        feet.userData.up = false;
+        feet.userData.rotatingUp = false;
     }
     // letter A/a
     else if (e.keyCode == 65) {
-        feet.userData.down = false;
+        feet.userData.rotatingDown = false;
     } 
     // letter R/r 
     else if (e.keyCode == 82) {
-        head.userData.up = false;
+        head.userData.rotatingUp = false;
     }
     // letter F/f
     else if (e.keyCode == 70) {
-        head.userData.down = false;
+        head.userData.rotatingDown = false;
     }
     //W
     if (87 == e.keyCode) {
@@ -674,4 +723,23 @@ function onKeyUp(e){
         armLeft.userData.movingOut = false;
         armRight.userData.movingOut = false;
     }
+
+    //O
+    if (79 == e.keyCode) {
+        head.userData.rotatingUp = false;
+        feet.userData.rotatingUp = false;
+        legs.userData.rotatingUp = false;
+        armLeft.userData.movingIn = false;
+        armRight.userData.movingIn = false;
+    }
+
+    //L
+    if (76 == e.keyCode) {
+        head.userData.rotatingDown = false;
+        feet.userData.rotatingDown = false;
+        legs.userData.rotatingDown = false;
+        armLeft.userData.movingOut = false;
+        armRight.userData.movingOut = false;
+    }
+
 }
