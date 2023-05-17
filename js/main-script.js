@@ -5,6 +5,13 @@ var mainCamera, cameras;
 var renderer, scene;
 var materials
 var trailerBoxMaterial, trailerWheelMaterial;
+var globalClock, deltaTime;
+
+var leftArrowPressed, upArrowPressed, rightArrowPressed, downArrowPressed;
+
+var trailer;
+
+const step = 10;
 
 /* Size constants */
 const lTrailer = 48, hTrailer = 18, dTrailer = 12;
@@ -89,7 +96,7 @@ function createCamera() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 function createTrailer() {
-    const trailer = new THREE.Object3D();
+    trailer = new THREE.Object3D();
     addBox(trailer, 0, 0, 0);
     
     addWheel(trailer, lTrailer/2 - 5 ,-hTrailer/2, dTrailer/2)
@@ -150,7 +157,14 @@ function handleCollisions(){
 ////////////
 function update(){
     'use strict';
-
+    deltaTime = globalClock.getDelta();
+    var velocityValue = step;
+    if ((leftArrowPressed || rightArrowPressed) && (upArrowPressed || downArrowPressed)) // normalize if move is diagonal
+        velocityValue = (velocityValue / Math.sqrt(velocityValue ** 2 + velocityValue ** 2)) * velocityValue;
+    if (leftArrowPressed) trailer.position.x -= velocityValue * deltaTime;
+    if (rightArrowPressed) trailer.position.x += velocityValue * deltaTime;
+    if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
+    if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
 }
 
 /////////////
@@ -170,15 +184,23 @@ function init() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
+    
     createScene();
     createCamera();
+    
+    trailerVelocityX = 0;
+    trailerVelocityZ = 0;
 
+    globalClock = new THREE.Clock(true);
+    deltaTime = globalClock.getDelta();
     render();
+
+    leftArrowPressed = false, rightArrowPressed = false, downArrowPressed = false, upArrowPressed = false;
 
     materials = [trailerBoxMaterial, trailerWheelMaterial];
     
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
 }
 
@@ -207,7 +229,23 @@ function onKeyDown(e) {
     'use strict';
     if (49 <= e.keyCode && e.keyCode <= 53) {
         mainCamera = cameras[e.keyCode - 49];
+        return;
     }
+    switch(e.keyCode) {
+        case 37:    // left arrow
+            leftArrowPressed = true;
+            break;
+        case 38:    // up arrow
+            upArrowPressed = true;
+            break;
+        case 39:    // right arrow
+            rightArrowPressed = true;
+            break;
+        case 40:    // down arrow
+            downArrowPressed = true;
+            break;
+    }
+
 }
 
 ///////////////////////
@@ -215,5 +253,18 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e){
     'use strict';
-
+    switch(e.keyCode) {
+        case 37:    // left arrow
+            leftArrowPressed = false;
+            break;
+        case 38:    // up arrow
+            upArrowPressed = false;
+            break;
+        case 39:    // right arrow
+            rightArrowPressed = false;
+            break;
+        case 40:    // down arrow
+            downArrowPressed = false;
+            break;
+    }
 }
