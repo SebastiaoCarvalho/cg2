@@ -5,12 +5,13 @@ var mainCamera, cameras;
 var renderer, scene;
 var materials
 var trailerBoxMaterial, trailerWheelMaterial;
-var trailerVelocityX, trailerVelocityZ;
 var globalClock, deltaTime;
+
+var leftArrowPressed, upArrowPressed, rightArrowPressed, downArrowPressed;
 
 var trailer;
 
-const step = 5;
+const step = 10;
 
 /* Size constants */
 const lTrailer = 48, hTrailer = 18, dTrailer = 12;
@@ -157,8 +158,13 @@ function handleCollisions(){
 function update(){
     'use strict';
     deltaTime = globalClock.getDelta();
-    trailer.position.x += trailerVelocityX * deltaTime;
-    trailer.position.z += trailerVelocityZ * deltaTime;
+    var velocityValue = step;
+    if ((leftArrowPressed || rightArrowPressed) && (upArrowPressed || downArrowPressed)) // normalize if move is diagonal
+        velocityValue = (velocityValue / Math.sqrt(velocityValue ** 2 + velocityValue ** 2)) * velocityValue;
+    if (leftArrowPressed) trailer.position.x -= velocityValue * deltaTime;
+    if (rightArrowPressed) trailer.position.x += velocityValue * deltaTime;
+    if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
+    if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
 }
 
 /////////////
@@ -188,6 +194,8 @@ function init() {
     globalClock = new THREE.Clock(true);
     deltaTime = globalClock.getDelta();
     render();
+
+    leftArrowPressed = false, rightArrowPressed = false, downArrowPressed = false, upArrowPressed = false;
 
     materials = [trailerBoxMaterial, trailerWheelMaterial];
     
@@ -225,16 +233,16 @@ function onKeyDown(e) {
     }
     switch(e.keyCode) {
         case 37:    // left arrow
-            trailerVelocityX -= trailerVelocityX < 0 ? 0 : step;
+            leftArrowPressed = true;
             break;
         case 38:    // up arrow
-            trailerVelocityZ -= trailerVelocityZ < 0 ? 0 :  step;
+            upArrowPressed = true;
             break;
         case 39:    // right arrow
-            trailerVelocityX += trailerVelocityX > 0 ? 0 : step;
+            rightArrowPressed = true;
             break;
         case 40:    // down arrow
-            trailerVelocityZ += trailerVelocityZ > 0 ? 0 : step;
+            downArrowPressed = true;
             break;
     }
 
@@ -247,16 +255,16 @@ function onKeyUp(e){
     'use strict';
     switch(e.keyCode) {
         case 37:    // left arrow
-            trailerVelocityX += step;
+            leftArrowPressed = false;
             break;
         case 38:    // up arrow
-            trailerVelocityZ += step;
+            upArrowPressed = false;
             break;
         case 39:    // right arrow
-            trailerVelocityX -= step;
+            rightArrowPressed = false;
             break;
         case 40:    // down arrow
-            trailerVelocityZ -= step;
+            downArrowPressed = false;
             break;
     }
 }
