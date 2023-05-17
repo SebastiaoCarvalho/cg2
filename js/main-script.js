@@ -15,6 +15,9 @@ const step = 10;
 
 var wireframing = true;
 
+/* Robot */
+var robot, head, armLeft, armRight, legs, feet;
+
 /* Waist */
 const lWaist=10, hWaist=5, dWaist=5;
 var waistMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700, wireframe: wireframing });
@@ -153,7 +156,7 @@ function createCamera() {
 /* Create Robot */
 function createRobot(x, y, z){
     'use strict'
-    var robot = new THREE.Object3D();
+    robot = new THREE.Object3D();
     robot.position.set(x, y, z);
 
     addWaist(robot, 0, 0, 0);
@@ -163,7 +166,7 @@ function createRobot(x, y, z){
     addWheel(robot, -lWaist/2 - hWheel/2, 0, 0);
 
     /* Head */
-    var head = new THREE.Object3D();
+    head = new THREE.Object3D();
     head.add(new THREE.AxesHelper(5));
     robot.add(head);
     var xHead = 0;
@@ -178,7 +181,7 @@ function createRobot(x, y, z){
     addAntena(head, -lHead/2 + rAntena, hHead + hAntena/2, 0);
 
     /* Left Arm */
-    var armLeft = new THREE.Object3D();
+    armLeft = new THREE.Object3D();
     armLeft.add(new THREE.AxesHelper(5));
     robot.add(armLeft);
     var xLeftArm = x + (lWaist/2 + lArm/10);
@@ -191,7 +194,7 @@ function createRobot(x, y, z){
     addTube(armLeft, lArm/2 - 3*rTube, hArm/2 + 2*hTube/13 - hTube/2, -dArm/2 - rTube);
 
     /* Right Arm */
-    var armRight = new THREE.Object3D();
+    armRight = new THREE.Object3D();
     armRight.add(new THREE.AxesHelper(5));
     robot.add(armRight);
     var xRightArm = x - (lWaist/2 + lArm/10);
@@ -204,7 +207,7 @@ function createRobot(x, y, z){
     addTube(armRight, -lArm/2 + 3*rTube, hArm/2 + 2*hTube/13 - hTube/2, -dArm/2 - rTube);
 
     /* Legs */
-    var legs = new THREE.Object3D();
+    legs = new THREE.Object3D();
     legs.add(new THREE.AxesHelper(5));
     robot.add(legs);
     /* Same Axis as Father */
@@ -219,7 +222,7 @@ function createRobot(x, y, z){
     addWheel(legs, -lWaist/2 - hWheel/2, -hWaist/2 - hThigh - hLeg +2 + rWheel, 0);
 
     /* Feet */
-    var feet = new THREE.Object3D();
+    feet = new THREE.Object3D();
     feet.add(new THREE.AxesHelper(5));
     legs.add(feet);
     var xFeet = x;
