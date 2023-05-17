@@ -98,10 +98,10 @@ function createCamera() {
     'use strict';
     
     const aspect = window.innerWidth / window.innerHeight;
-    const left = -100;
-    const right = 100;
-    const top = 50;
-    const down = -50;
+    const left = -70;
+    const right = 70;
+    const top = 40;
+    const down = -40;
     const fov = 70;
     const near = 1;
     const far = 1000;
@@ -167,6 +167,7 @@ function createRobot(x, y, z){
 
     /* Head */
     head = new THREE.Object3D();
+    head.userData = { up: false, down: false };
     head.add(new THREE.AxesHelper(5));
     robot.add(head);
     var xHead = 0;
@@ -226,6 +227,7 @@ function createRobot(x, y, z){
 
     /* Feet */
     feet = new THREE.Object3D();
+    feet.userData = { up: false, down: false };
     feet.add(new THREE.AxesHelper(5));
     legs.add(feet);
     var xFeet = x;
@@ -456,7 +458,26 @@ function update(){
         armRight.translateX(0.5);
         armLeft.translateX(-0.5);
     }
-
+    if (feet.userData.up) {
+        if  (feet.rotation.x > -Math.PI/2) {
+            feet.rotation.x -= 0.02;
+        }
+    }
+    else if (feet.userData.down) {
+        if (feet.rotation.x < 0) {
+            feet.rotation.x += 0.02;
+        }
+    }
+    else if (head.userData.up) {
+        if  (head.rotation.x < Math.PI) {
+            head.rotation.x += 0.02;
+        }
+    }
+    else if (head.userData.down) {
+        if (head.rotation.x > 0) {
+            head.rotation.x -= 0.02;
+        }
+    }
     if(armRight.userData.movingOut && armLeft.userData.movingOut
         && armRight.position.x > -lArm && armLeft.position.x < lArm){
         armRight.translateX(-0.5);
@@ -507,8 +528,10 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
+
     update();
     render();
+
     requestAnimationFrame(animate);
 }
 
@@ -518,6 +541,12 @@ function animate() {
 function onResize() { 
     'use strict';
 
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    if (window.innerHeight > 0 && window.innerWidth > 0) {
+        mainCamera.aspect = window.innerWidth / window.innerHeight;
+        mainCamera.updateProjectionMatrix();
+    }
 }
 
 ///////////////////////
@@ -525,6 +554,7 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
+    // number 1 to 5
     if (49 <= e.keyCode && e.keyCode <= 53) {
         mainCamera = cameras[e.keyCode - 49];
         return;
@@ -542,14 +572,31 @@ function onKeyDown(e) {
         case 40:    // down arrow
             downArrowPressed = true;
             break;
+    } 
+    // number 6
     if (54 == e.keyCode) {
         for (let i = 0; i < materials.length; i++) {
             materials[i].wireframe = !materials[i].wireframe;
         }
     }
-
-    //W
-    if (87 == e.keyCode) {
+    // letter Q/q
+    else if (e.keyCode == 81) {
+        feet.userData.up = true;
+    }
+    // letter A/a
+    else if (e.keyCode == 65) {
+        feet.userData.down = true;
+    }
+    // letter R/r 
+    else if (e.keyCode == 82) {
+        head.userData.up = true;
+    }
+    // letter F/f
+    else if (e.keyCode == 70) {
+        head.userData.down = true;
+    }
+     //W
+     if (87 == e.keyCode) {
         legs.userData.rotatingUp = true;
     }
 
@@ -569,7 +616,6 @@ function onKeyDown(e) {
         armLeft.userData.movingOut = true;
         armRight.userData.movingOut = true;
     }
-
 }
 
 ///////////////////////
@@ -591,6 +637,22 @@ function onKeyUp(e){
             downArrowPressed = false;
             break;
 
+    // letter Q/q
+    if (e.keyCode == 81) {
+        feet.userData.up = false;
+    }
+    // letter A/a
+    else if (e.keyCode == 65) {
+        feet.userData.down = false;
+    } 
+    // letter R/r 
+    else if (e.keyCode == 82) {
+        head.userData.up = false;
+    }
+    // letter F/f
+    else if (e.keyCode == 70) {
+        head.userData.down = false;
+    }
     //W
     if (87 == e.keyCode) {
         legs.userData.rotatingUp = false;
