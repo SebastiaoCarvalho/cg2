@@ -60,7 +60,7 @@ const lLeg=5, hLeg=13, dLeg=5;
 const lFoot=5, hFoot=3, dFoot=3;
 
 /* Trailer */
-const lTrailer = 48, hTrailer = 18, dTrailer = 12;
+const lTrailer = 12, hTrailer = 18, dTrailer = 48;
 var trailerMaterial = new THREE.MeshBasicMaterial({ color: 0x838383, wireframe: wireframing });
 
 /* Trailer Wheel */
@@ -155,7 +155,6 @@ function createRobot(x, y, z){
     'use strict'
     var robot = new THREE.Object3D();
     robot.position.set(x, y, z);
-    robot.rotateY(Math.PI);
 
     addWaist(robot, 0, 0, 0);
     addAbdomen(robot, 0, hWaist/2 + hAbdomen/2, 0);
@@ -173,8 +172,8 @@ function createRobot(x, y, z){
     head.position.set(xHead, yHead, zHead);
 
     addHead(head, 0, hHead/2, 0);
-    addEye(head, lHead/2 - rEye, hHead-3*rEye, -dHead/2);
-    addEye(head, -lHead/2 + rEye, hHead-3*rEye, -dHead/2);
+    addEye(head, lHead/2 - rEye, hHead-3*rEye, dHead/2);
+    addEye(head, -lHead/2 + rEye, hHead-3*rEye, dHead/2);
     addAntena(head, lHead/2 - rAntena, hHead + hAntena/2, 0);
     addAntena(head, -lHead/2 + rAntena, hHead + hAntena/2, 0);
 
@@ -184,12 +183,12 @@ function createRobot(x, y, z){
     robot.add(armLeft);
     var xLeftArm = x + (lWaist/2 + lArm/10);
     var yLeftArm = y + (hWaist/2 + (hAbdomen+hChest)/2);
-    var zLeftArm = z + (dWaist/2 + dArm/2);
+    var zLeftArm = z + (-dWaist/2 - dArm/2);
     armLeft.position.set(xLeftArm, yLeftArm, zLeftArm);
 
     addArm(armLeft, 0, 0, 0);
-    addForearm(armLeft, lArm/2 - lForearm/2, -hArm/2 + hForearm/2, -dArm/2 - dForearm/2);
-    addTube(armLeft, lArm/2 - 3*rTube, hArm/2 + 2*hTube/13 - hTube/2, dArm/2 + rTube);
+    addForearm(armLeft, lArm/2 - lForearm/2, -hArm/2 + hForearm/2, dArm/2 + dForearm/2);
+    addTube(armLeft, lArm/2 - 3*rTube, hArm/2 + 2*hTube/13 - hTube/2, -dArm/2 - rTube);
 
     /* Right Arm */
     var armRight = new THREE.Object3D();
@@ -197,12 +196,12 @@ function createRobot(x, y, z){
     robot.add(armRight);
     var xRightArm = x - (lWaist/2 + lArm/10);
     var yRightArm = y + (hWaist/2 + (hAbdomen+hChest)/2);
-    var zRightArm = z + (dWaist/2 + dArm/2);
+    var zRightArm = z + (-dWaist/2 - dArm/2);
     armRight.position.set(xRightArm, yRightArm, zRightArm);
 
     addArm(armRight, 0, 0, 0);
-    addForearm(armRight, -lArm/2 + lForearm/2, -hArm/2 + hForearm/2, -dArm/2 - dForearm/2);
-    addTube(armRight, -lArm/2 + 3*rTube, hArm/2 + 2*hTube/13 - hTube/2, dArm/2 + rTube);
+    addForearm(armRight, -lArm/2 + lForearm/2, -hArm/2 + hForearm/2, dArm/2 + dForearm/2);
+    addTube(armRight, -lArm/2 + 3*rTube, hArm/2 + 2*hTube/13 - hTube/2, -dArm/2 - rTube);
 
     /* Legs */
     var legs = new THREE.Object3D();
@@ -225,11 +224,11 @@ function createRobot(x, y, z){
     legs.add(feet);
     var xFeet = x;
     var yFeet = y - (hWaist/2 + hThigh + hLeg);
-    var zFeet = z - (dLeg/2);
+    var zFeet = z + (dLeg/2);
     feet.position.set(xFeet, yFeet, zFeet);
 
-    addFoot(feet, lFoot/2, hFoot/2, -dFoot/2);
-    addFoot(feet, -lFoot/2, hFoot/2, -dFoot/2);
+    addFoot(feet, lFoot/2, hFoot/2, dFoot/2);
+    addFoot(feet, -lFoot/2, hFoot/2, dFoot/2);
 
     scene.add(robot);
 }
@@ -364,20 +363,19 @@ function addFoot(obj, x, y, z) {
     obj.add(mesh);
 }
 
-// TODO: rotate
 function createTrailer(x, y, z) {
     const trailer = new THREE.Object3D();
     trailer.position.set(x, y, z);
-    trailer.rotateY(Math.PI/2);
+    //trailer.rotateY(Math.PI/2);
 
     addBox(trailer, 0, 0, 0);
     
-    addTWheel(trailer, lTrailer/2 - 5 ,-hTrailer/2, dTrailer/2)
-    addTWheel(trailer, lTrailer/2 - 14, -hTrailer/2, dTrailer/2);
-    addTWheel(trailer, lTrailer/2 - 5, -hTrailer/2, -dTrailer/2);
-    addTWheel(trailer, lTrailer/2 - 14, -hTrailer/2, -dTrailer/2);
+    addTWheel(trailer, lTrailer/2, -hTrailer/2, -dTrailer/2 + 2 + rTrailerWheel);
+    addTWheel(trailer, lTrailer/2, -hTrailer/2, -dTrailer/2 + 2 + 2*rTrailerWheel + 2 + rTrailerWheel);
+    addTWheel(trailer, -lTrailer/2, -hTrailer/2, -dTrailer/2 + 2 + rTrailerWheel);
+    addTWheel(trailer, -lTrailer/2, -hTrailer/2, -dTrailer/2 + 2 + 2*rTrailerWheel + 2 + rTrailerWheel);
 
-    addConnector(trailer, -19, -9 - 1 , 0);
+    addConnector(trailer, 0, -hTrailer/2 - hTrailerConnector/2, dTrailer/2 - 3*rTrailerConnector);
 
     scene.add(trailer);
 }
@@ -393,7 +391,7 @@ function addBox(obj, x, y, z) {
 
 function addTWheel(obj, x, y, z) {
     geometry = new THREE.CylinderGeometry(rTrailerWheel, rTrailerWheel, hTrailerWheel, radialSegments);
-    geometry.rotateX(Math.PI/2);
+    geometry.rotateZ(Math.PI/2);
     mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
@@ -470,7 +468,7 @@ function init() {
 
     leftArrowPressed = false, rightArrowPressed = false, downArrowPressed = false, upArrowPressed = false;
 
-    materials = [waistMaterial, abdomenChestArmForearmMaterial, headAntenaLegsFootMaterial, thighMaterial, trailerMaterial];
+    materials = [waistMaterial, abdomenChestArmForearmMaterial, headAntenaLegsFootMaterial, thighMaterial, trailerMaterial, wheelTubeEyeConnectorMaterial];
     
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
