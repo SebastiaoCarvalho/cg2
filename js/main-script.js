@@ -14,21 +14,22 @@ var trailer;
 const step = 10;
 
 var geometry, material, mesh;
+var wireframing = true;
 
 /* Waist */
 const lWaist=10, hWaist=5, dWaist=5;
-var waistMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700, wireframe: true });
+var waistMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700, wireframe: wireframing });
 
 /* Abdomen */
 const lAbdomen=4, hAbdomen=3, dAbdomen=3;
-var abdomenChestArmForearmMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+var abdomenChestArmForearmMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: wireframing });
 
 /* Chest */
 const lChest=10, hChest=9, dChest=5;
 
 /* Wheel */
 const rWheel=1.5, hWheel=1;
-var wheelTubeEyeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+var wheelTubeEyeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: wireframing });
 
 /* Arm */
 const lArm=5, hArm=12, dArm=3;
@@ -41,7 +42,7 @@ const rTube=0.5, hTube=13;
 
 /* Head */
 const lHead=4, hHead=4, dHead=3;
-var headAntenaLegsFootMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true });
+var headAntenaLegsFootMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: wireframing });
 
 /* Eye */
 const rEye=0.5;
@@ -51,7 +52,7 @@ const rAntena=0.5, hAntena=1;
 
 /* Thigh */
 const lThigh=3, hThigh=4, dThigh=3;
-var thighMaterial = new THREE.MeshBasicMaterial({ color: 0xd3d3d3, wireframe: true });
+var thighMaterial = new THREE.MeshBasicMaterial({ color: 0xd3d3d3, wireframe: wireframing });
 
 /* Leg */
 const lLeg=5, hLeg=13, dLeg=5;
