@@ -377,10 +377,10 @@ function addFoot(obj, x, y, z) {
     obj.add(mesh);
 }
 
+/* Trailer */
 function createTrailer(x, y, z) {
     trailer = new THREE.Object3D();
     trailer.position.set(x, y, z);
-    //trailer.rotateY(Math.PI/2);
 
     addBox(trailer, 0, 0, 0);
     
@@ -451,6 +451,10 @@ function update(){
     if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
     if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
 
+    for (let i = 0; i < materials.length; i++) {
+        materials[i].wireframe = wireframing;
+    }
+
     if(legs.userData.rotatingUp){
         if(legs.rotation.x + rotationIncrement <= Math.PI/2)
             legs.rotateX(rotationIncrement);
@@ -501,15 +505,15 @@ function update(){
     }
 
     if (head.userData.rotatingUp) {
-        if(head.rotation.x + rotationIncrement <= Math.PI)
-            head.rotateX(rotationIncrement);
+        if(head.rotation.x + rotationIncrement <= Math.PI && head.rotation.x + rotationIncrement >= 0)
+            head.rotateX(2*rotationIncrement);
         else
             head.rotation.x = Math.PI;
     }
 
     if (head.userData.rotatingDown) {
         if(head.rotation.x - rotationIncrement >= 0)
-            head.rotateX(-rotationIncrement);
+            head.rotateX(-2*rotationIncrement);
         else
             head.rotation.x = 0;
     }
@@ -605,9 +609,7 @@ function onKeyDown(e) {
     } 
     // number 6
     if (54 == e.keyCode) {
-        for (let i = 0; i < materials.length; i++) {
-            materials[i].wireframe = !materials[i].wireframe;
-        }
+        wireframing = !wireframing;
     }
     // letter Q/q
     else if (e.keyCode == 81) {
