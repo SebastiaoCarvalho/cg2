@@ -17,6 +17,14 @@ var wireframing = true;
 
 /* Robot */
 var robot, head, armLeft, armRight, legs, feet;
+var rotatingHeadIn = false;
+var rotatingHeadOut = false;
+var translatingArmsIn = false;
+var translatingArmsOut = false;
+var rotatingLegsIn = false;
+var rotatingLegsOut = false;
+var rotatingFeetIn = false;
+var rotatingFeetOut = false;
 
 /* Waist */
 const lWaist=10, hWaist=5, dWaist=5;
