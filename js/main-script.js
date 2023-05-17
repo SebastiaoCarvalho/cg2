@@ -93,8 +93,8 @@ function createScene(){
     scene.background = backgroundColor;
     scene.add(new THREE.AxisHelper(10));
 
-    createTrailer(0, 0, -50);
-    createRobot(0, 0, 0);
+    createTrailer(0, hTrailer/2 + rTrailerWheel, -50);
+    createRobot(0, hWaist/2 + rWheel, 0);
 }
 
 //////////////////////
@@ -192,9 +192,9 @@ function createRobot(x, y, z){
     armLeft.userData = { movingIn: false, movingOut: false};
     armLeft.add(new THREE.AxesHelper(5));
     robot.add(armLeft);
-    var xLeftArm = x + (lWaist/2 + lArm/10);
-    var yLeftArm = y + (hWaist/2 + (hAbdomen+hChest)/2);
-    var zLeftArm = z + (-dWaist/2 - dArm/2);
+    var xLeftArm = lWaist/2 + lArm/10;
+    var yLeftArm = hWaist/2 + (hAbdomen+hChest)/2;
+    var zLeftArm = -dWaist/2 - dArm/2;
     armLeft.position.set(xLeftArm, yLeftArm, zLeftArm);
 
     addArm(armLeft, 0, 0, 0);
@@ -206,9 +206,9 @@ function createRobot(x, y, z){
     armRight.userData = { movingIn: false, movingOut: false};
     armRight.add(new THREE.AxesHelper(5));
     robot.add(armRight);
-    var xRightArm = x - (lWaist/2 + lArm/10);
-    var yRightArm = y + (hWaist/2 + (hAbdomen+hChest)/2);
-    var zRightArm = z + (-dWaist/2 - dArm/2);
+    var xRightArm = lWaist/2 + lArm/10;
+    var yRightArm = hWaist/2 + (hAbdomen+hChest)/2;
+    var zRightArm = -dWaist/2 - dArm/2;
     armRight.position.set(xRightArm, yRightArm, zRightArm);
 
     addArm(armRight, 0, 0, 0);
@@ -236,9 +236,9 @@ function createRobot(x, y, z){
     feet.userData = { rotatingUp: false, rotatingDown: false };
     feet.add(new THREE.AxesHelper(5));
     legs.add(feet);
-    var xFeet = x;
-    var yFeet = y - (hWaist/2 + hThigh + hLeg);
-    var zFeet = z + (dLeg/2);
+    var xFeet = 0;
+    var yFeet = -(hWaist/2 + hThigh + hLeg);
+    var zFeet = dLeg/2;
     feet.position.set(xFeet, yFeet, zFeet);
 
     addFoot(feet, lFoot/2, hFoot/2, dFoot/2);
