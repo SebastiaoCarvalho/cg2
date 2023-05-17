@@ -17,21 +17,13 @@ var wireframing = true;
 
 /* Robot */
 var robot, head, armLeft, armRight, legs, feet;
-var rotatingHeadIn = false;
-var rotatingHeadOut = false;
-var translatingArmsIn = false;
-var translatingArmsOut = false;
-var rotatingLegsIn = false;
-var rotatingLegsOut = false;
-var rotatingFeetIn = false;
-var rotatingFeetOut = false;
 
 /* Waist */
 const lWaist=10, hWaist=5, dWaist=5;
 var waistMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700, wireframe: wireframing });
 
 /* Abdomen */
-const lAbdomen=4, hAbdomen=3, dAbdomen=3;
+const lAbdomen=4, hAbdomen=3, dAbdomen=5;
 var abdomenChestArmForearmMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: wireframing });
 
 /* Chest */
@@ -190,6 +182,7 @@ function createRobot(x, y, z){
 
     /* Left Arm */
     armLeft = new THREE.Object3D();
+    armLeft.userData = { movingIn: false, movingOut: false};
     armLeft.add(new THREE.AxesHelper(5));
     robot.add(armLeft);
     var xLeftArm = x + (lWaist/2 + lArm/10);
@@ -203,6 +196,7 @@ function createRobot(x, y, z){
 
     /* Right Arm */
     armRight = new THREE.Object3D();
+    armRight.userData = { movingIn: false, movingOut: false};
     armRight.add(new THREE.AxesHelper(5));
     robot.add(armRight);
     var xRightArm = x - (lWaist/2 + lArm/10);
@@ -216,6 +210,7 @@ function createRobot(x, y, z){
 
     /* Legs */
     legs = new THREE.Object3D();
+    legs.userData = { rotatingUp: false, rotatingDown: false};
     legs.add(new THREE.AxesHelper(5));
     robot.add(legs);
     /* Same Axis as Father */
@@ -447,6 +442,26 @@ function update(){
     if (rightArrowPressed) trailer.position.x += velocityValue * deltaTime;
     if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
     if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
+
+    if(legs.userData.rotatingUp && legs.rotation.x < Math.PI/2){
+        legs.rotateX(Math.PI/64);
+    }
+
+    if(legs.userData.rotatingDown && legs.rotation.x > 0){
+        legs.rotateX(-Math.PI/64);
+    }
+
+    if(armRight.userData.movingIn && armLeft.userData.movingIn
+        && armRight.position.x < -lArm/2 && armLeft.position.x > lArm/2){
+        armRight.translateX(0.5);
+        armLeft.translateX(-0.5);
+    }
+
+    if(armRight.userData.movingOut && armLeft.userData.movingOut
+        && armRight.position.x > -lArm && armLeft.position.x < lArm){
+        armRight.translateX(-0.5);
+        armLeft.translateX(0.5);
+    }
 }
 
 /////////////
@@ -481,6 +496,7 @@ function init() {
 
     materials = [waistMaterial, abdomenChestArmForearmMaterial, headAntenaLegsFootMaterial, thighMaterial, trailerMaterial, wheelTubeEyeConnectorMaterial];
     
+    window.addEventListener("keyup", onKeyUp);
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
@@ -526,6 +542,32 @@ function onKeyDown(e) {
         case 40:    // down arrow
             downArrowPressed = true;
             break;
+    if (54 == e.keyCode) {
+        for (let i = 0; i < materials.length; i++) {
+            materials[i].wireframe = !materials[i].wireframe;
+        }
+    }
+
+    //W
+    if (87 == e.keyCode) {
+        legs.userData.rotatingUp = true;
+    }
+
+    //S
+    if (83 == e.keyCode) {
+        legs.userData.rotatingDown = true;
+    }
+
+    //E
+    if (69 == e.keyCode) {
+        armLeft.userData.movingIn = true;
+        armRight.userData.movingIn = true;
+    }
+
+    //D
+    if (68 == e.keyCode) {
+        armLeft.userData.movingOut = true;
+        armRight.userData.movingOut = true;
     }
 
 }
@@ -548,5 +590,26 @@ function onKeyUp(e){
         case 40:    // down arrow
             downArrowPressed = false;
             break;
+
+    //W
+    if (87 == e.keyCode) {
+        legs.userData.rotatingUp = false;
+    }
+
+    //S
+    if (83 == e.keyCode) {
+        legs.userData.rotatingDown = false;
+    }
+
+    //E
+    if (69 == e.keyCode) {
+        armLeft.userData.movingIn = false;
+        armRight.userData.movingIn = false;
+    }
+
+    //D
+    if (68 == e.keyCode) {
+        armLeft.userData.movingOut = false;
+        armRight.userData.movingOut = false;
     }
 }
