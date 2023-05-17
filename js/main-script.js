@@ -5,6 +5,12 @@ var mainCamera, cameras;
 var renderer, scene;
 var materials
 var trailerBoxMaterial, trailerWheelMaterial;
+var trailerVelocityX, trailerVelocityZ;
+var globalClock, deltaTime;
+
+var trailer;
+
+const step = 5;
 
 /* Size constants */
 const lTrailer = 48, hTrailer = 18, dTrailer = 12;
@@ -89,7 +95,7 @@ function createCamera() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 function createTrailer() {
-    const trailer = new THREE.Object3D();
+    trailer = new THREE.Object3D();
     addBox(trailer, 0, 0, 0);
     
     addWheel(trailer, lTrailer/2 - 5 ,-hTrailer/2, dTrailer/2)
@@ -150,7 +156,9 @@ function handleCollisions(){
 ////////////
 function update(){
     'use strict';
-
+    deltaTime = globalClock.getDelta();
+    trailer.position.x += trailerVelocityX * deltaTime;
+    trailer.position.z += trailerVelocityZ * deltaTime;
 }
 
 /////////////
@@ -170,15 +178,21 @@ function init() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
+    
     createScene();
     createCamera();
+    
+    trailerVelocityX = 0;
+    trailerVelocityZ = 0;
 
+    globalClock = new THREE.Clock(true);
+    deltaTime = globalClock.getDelta();
     render();
 
     materials = [trailerBoxMaterial, trailerWheelMaterial];
     
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
 }
 
@@ -207,7 +221,23 @@ function onKeyDown(e) {
     'use strict';
     if (49 <= e.keyCode && e.keyCode <= 53) {
         mainCamera = cameras[e.keyCode - 49];
+        return;
     }
+    switch(e.keyCode) {
+        case 37:    // left arrow
+            trailerVelocityX -= trailerVelocityX < 0 ? 0 : step;
+            break;
+        case 38:    // up arrow
+            trailerVelocityZ -= trailerVelocityZ < 0 ? 0 :  step;
+            break;
+        case 39:    // right arrow
+            trailerVelocityX += trailerVelocityX > 0 ? 0 : step;
+            break;
+        case 40:    // down arrow
+            trailerVelocityZ += trailerVelocityZ > 0 ? 0 : step;
+            break;
+    }
+
 }
 
 ///////////////////////
@@ -215,5 +245,18 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e){
     'use strict';
-
+    switch(e.keyCode) {
+        case 37:    // left arrow
+            trailerVelocityX += step;
+            break;
+        case 38:    // up arrow
+            trailerVelocityZ += step;
+            break;
+        case 39:    // right arrow
+            trailerVelocityX -= step;
+            break;
+        case 40:    // down arrow
+            trailerVelocityZ -= step;
+            break;
+    }
 }
