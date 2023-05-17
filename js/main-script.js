@@ -4,7 +4,7 @@
 var mainCamera, cameras;
 var renderer, scene;
 var materials
-var trailerBoxMaterial, trailerWheelMaterial;
+
 var globalClock, deltaTime;
 
 var leftArrowPressed, upArrowPressed, rightArrowPressed, downArrowPressed;
@@ -13,7 +13,6 @@ var trailer;
 
 const step = 10;
 
-var geometry, material, mesh;
 var wireframing = true;
 
 /* Waist */
@@ -29,7 +28,7 @@ const lChest=10, hChest=9, dChest=5;
 
 /* Wheel */
 const rWheel=1.5, hWheel=1;
-var wheelTubeEyeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: wireframing });
+var wheelTubeEyeConnectorMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: wireframing });
 
 /* Arm */
 const lArm=5, hArm=12, dArm=3;
@@ -60,10 +59,17 @@ const lLeg=5, hLeg=13, dLeg=5;
 /* Foot */
 const lFoot=5, hFoot=3, dFoot=3;
 
-/* Size constants */
+/* Trailer */
 const lTrailer = 48, hTrailer = 18, dTrailer = 12;
-const rTrailerWheel = 4, hTrailerWheel = 1;
-const rTrailerConnector = 2, hTrailerConnector = 2;
+var trailerMaterial = new THREE.MeshBasicMaterial({ color: 0x838383, wireframe: wireframing });
+
+/* Trailer Wheel */
+const rTrailerWheel = 2, hTrailerWheel = 1;
+
+/* Trailer Connector */
+const rTrailerConnector = 1, hTrailerConnector = 2;
+
+/* radialSegments */
 const radialSegments = 32;
 
 /////////////////////
@@ -78,7 +84,7 @@ function createScene(){
     scene.background = backgroundColor;
     scene.add(new THREE.AxisHelper(10));
 
-    createTrailer();
+    createTrailer(0, 0, -40);
     createRobot(0, 0, 0);
 }
 
@@ -228,30 +234,6 @@ function createRobot(x, y, z){
     scene.add(robot);
 }
 
-function createTrailer() {
-    trailer = new THREE.Object3D();
-    addBox(trailer, 0, 0, 0);
-    
-    addTWheel(trailer, lTrailer/2 - 5 ,-hTrailer/2, dTrailer/2)
-    addTWheel(trailer, lTrailer/2 - 14, -hTrailer/2, dTrailer/2);
-    addTWheel(trailer, lTrailer/2 - 5, -hTrailer/2, -dTrailer/2);
-    addTWheel(trailer, lTrailer/2 - 14, -hTrailer/2, -dTrailer/2);
-
-    addConnector(trailer, -19, -9 - 1 , 0);
-
-    scene.add(trailer);
-}
-
-function addBox(obj, x, y, z) {
-    'use strict';
-    const box = new THREE.BoxGeometry(lTrailer, hTrailer, dTrailer);
-    trailerBoxMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    const mesh = new THREE.Mesh(box, trailerBoxMaterial);
-
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
 function addWaist(obj, x, y, z) {
     'use strict';
 
@@ -284,22 +266,9 @@ function addChest(obj, x, y, z) {
 
 function addWheel(obj, x, y, z) {
     'use strict';
-    var geometry = new THREE.CylinderGeometry(rTrailerWheel, rTrailerWheel, hTrailerWheel, radialSegments);
-    geometry.rotateX(Math.PI/2);
-    mesh = new THREE.Mesh(wheel, wheelTubeEyeMaterial);
-
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
-function addConnector(obj, x, y, z) {
-    'use strict';
-    const connector = new THREE.CylinderGeometry(rTrailerConnector, rTrailerConnector, hTrailerConnector, radialSegments);
-    const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
-    const mesh = new THREE.Mesh(connector, material);
-    geometry = new THREE.CylinderGeometry(rWheel, rWheel, hWheel, 32);
+    geometry = new THREE.CylinderGeometry(rWheel, rWheel, hWheel, radialSegments);
     geometry.rotateZ(Math.PI/2);
-    mesh = new THREE.Mesh(geometry, wheelTubeEyeMaterial);
+    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -318,8 +287,8 @@ function addHead(obj, x, y, z) {
 function addEye(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.SphereGeometry(rEye, 32, 32);
-    mesh = new THREE.Mesh(geometry, wheelTubeEyeMaterial);
+    geometry = new THREE.SphereGeometry(rEye, radialSegments, radialSegments);
+    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -328,7 +297,7 @@ function addEye(obj, x, y, z) {
 function addAntena(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.CylinderGeometry(rAntena, rAntena, hAntena, 32);
+    geometry = new THREE.CylinderGeometry(rAntena, rAntena, hAntena, radialSegments);
     mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
     mesh.position.set(x, y, z);
@@ -358,8 +327,8 @@ function addForearm(obj, x, y, z) {
 function addTube(obj, x, y, z) {
     'use strict';
 
-    geometry = new THREE.CylinderGeometry(rTube, rTube, hTube, 32);
-    mesh = new THREE.Mesh(geometry, wheelTubeEyeMaterial);
+    geometry = new THREE.CylinderGeometry(rTube, rTube, hTube, radialSegments);
+    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -395,11 +364,46 @@ function addFoot(obj, x, y, z) {
     obj.add(mesh);
 }
 
+// TODO: rotate
+function createTrailer(x, y, z) {
+    const trailer = new THREE.Object3D();
+    trailer.position.set(x, y, z);
+    trailer.rotateY(Math.PI/2);
+
+    addBox(trailer, 0, 0, 0);
+    
+    addTWheel(trailer, lTrailer/2 - 5 ,-hTrailer/2, dTrailer/2)
+    addTWheel(trailer, lTrailer/2 - 14, -hTrailer/2, dTrailer/2);
+    addTWheel(trailer, lTrailer/2 - 5, -hTrailer/2, -dTrailer/2);
+    addTWheel(trailer, lTrailer/2 - 14, -hTrailer/2, -dTrailer/2);
+
+    addConnector(trailer, -19, -9 - 1 , 0);
+
+    scene.add(trailer);
+}
+
+function addBox(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.BoxGeometry(lTrailer, hTrailer, dTrailer);
+    mesh = new THREE.Mesh(geometry, trailerMaterial);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
 function addTWheel(obj, x, y, z) {
-    geometry = new THREE.CylinderGeometry(rWheel, rWheel, hWheel, 32);
-    geometry.rotateZ(Math.PI/2);
-    material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
-    mesh = new THREE.Mesh(geometry, material);
+    geometry = new THREE.CylinderGeometry(rTrailerWheel, rTrailerWheel, hTrailerWheel, radialSegments);
+    geometry.rotateX(Math.PI/2);
+    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addConnector(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.CylinderGeometry(rTrailerConnector, rTrailerConnector, hTrailerConnector, radialSegments);
+    mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -466,7 +470,7 @@ function init() {
 
     leftArrowPressed = false, rightArrowPressed = false, downArrowPressed = false, upArrowPressed = false;
 
-    materials = [trailerBoxMaterial, trailerWheelMaterial];
+    materials = [waistMaterial, abdomenChestArmForearmMaterial, headAntenaLegsFootMaterial, thighMaterial, trailerMaterial];
     
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
