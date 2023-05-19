@@ -78,8 +78,8 @@ const rTrailerConnector = 1, hTrailerConnector = 2;
 /* radialSegments */
 const radialSegments = 32;
 
-const rotationIncrement = Math.PI/128;
-const translationIncrement = 0.05;
+const rotationIncrement = Math.PI/4;
+const translationIncrement = 1.38;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -456,23 +456,24 @@ function update(){
     }
 
     if(legs.userData.rotatingUp){
-        if(legs.rotation.x + rotationIncrement <= Math.PI/2)
-            legs.rotateX(rotationIncrement);
+        if(legs.rotation.x + rotationIncrement * deltaTime <= Math.PI/2)
+            legs.rotateX(rotationIncrement * deltaTime);
         else
             legs.rotation.x = Math.PI/2;
     }
 
     if(legs.userData.rotatingDown){
-        if(legs.rotation.x - rotationIncrement >= 0)
-            legs.rotateX(-rotationIncrement);
+        if(legs.rotation.x -rotationIncrement * deltaTime >= 0)
+            legs.rotateX(-rotationIncrement * deltaTime);
         else
             legs.rotation.x = 0;
     }
 
     if(armRight.userData.movingIn && armLeft.userData.movingIn){
-        if(armRight.position.x + translationIncrement<= -lArm/2 && armLeft.position.x + translationIncrement >= lArm/2){
-            armRight.translateX(translationIncrement);
-            armLeft.translateX(-translationIncrement);
+        if(armRight.position.x + translationIncrement * deltaTime <= -lArm/2 
+            && armLeft.position.x + translationIncrement * deltaTime >= lArm/2){
+            armRight.translateX(translationIncrement * deltaTime);
+            armLeft.translateX(-translationIncrement * deltaTime);
         }
         else{
             armRight.position.x = -lArm/2;
@@ -480,9 +481,10 @@ function update(){
         }
     }
     if(armRight.userData.movingOut && armLeft.userData.movingOut){
-        if(armRight.position.x + translationIncrement >= -lArm && armLeft.position.x + translationIncrement <= lArm){
-            armRight.translateX(-translationIncrement);
-            armLeft.translateX(translationIncrement);
+        if(armRight.position.x + translationIncrement * deltaTime >= -lArm 
+            && armLeft.position.x + translationIncrement * deltaTime <= lArm){
+            armRight.translateX(-translationIncrement * deltaTime);
+            armLeft.translateX(translationIncrement * deltaTime);
         }
         else{
             armRight.position.x = -lArm;
@@ -491,29 +493,30 @@ function update(){
     }
 
     if (feet.userData.rotatingUp) {
-        if (feet.rotation.x - rotationIncrement >= -Math.PI/2)
-            feet.rotateX(-rotationIncrement);
+        if (feet.rotation.x - rotationIncrement * deltaTime >= -Math.PI/2)
+            feet.rotateX(-rotationIncrement * deltaTime);
         else
             feet.rotation.x = -Math.PI/2;
     }
 
     if (feet.userData.rotatingDown) {
-        if(feet.rotation.x + rotationIncrement <= 0)
-            feet.rotateX(rotationIncrement);
+        if(feet.rotation.x + rotationIncrement * deltaTime <= 0)
+            feet.rotateX(rotationIncrement * deltaTime);
         else
             feet.rotation.x = 0;
     }
 
     if (head.userData.rotatingUp) {
-        if(head.rotation.x + rotationIncrement <= Math.PI && head.rotation.x + rotationIncrement >= 0)
-            head.rotateX(2*rotationIncrement);
+        if(head.rotation.x + rotationIncrement * deltaTime <= Math.PI 
+            && head.rotation.x + rotationIncrement * deltaTime>= 0)
+            head.rotateX(2*rotationIncrement * deltaTime);
         else
             head.rotation.x = Math.PI;
     }
 
     if (head.userData.rotatingDown) {
-        if(head.rotation.x - rotationIncrement >= 0)
-            head.rotateX(-2*rotationIncrement);
+        if(head.rotation.x - rotationIncrement * deltaTime >= 0)
+            head.rotateX(-2*rotationIncrement * deltaTime);
         else
             head.rotation.x = 0;
     }
