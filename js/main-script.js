@@ -15,6 +15,9 @@ const step = 10;
 
 var wireframing = true;
 
+/* Flag used for checking if the robot is in truck mode or not */
+var isTruck = false;
+
 /* Robot */
 var robot, head, armLeft, armRight, legs, feet;
 
@@ -426,12 +429,10 @@ function addConnector(obj, x, y, z) {
 //////////////////////
 function checkCollisions(){
     'use strict';
-    const margin = 2;
+    const margin = 0;
     const trailerXMin = trailer.position.x - lTrailer/2 - margin;
-    console.log(trailerXMin);
     const trailerXMax = trailer.position.x + lTrailer/2 + margin;
-    console.log(trailerXMax);
-    const trialerYMin = trailer.position.y - hTrailer/2 - margin;
+    const trailerYMin = trailer.position.y - hTrailer/2 - margin;
     const trailerYMax = trailer.position.y + hTrailer/2 + margin;
     const trailerZMin = trailer.position.z - dTrailer/2 - margin;
     const trailerZMax = trailer.position.z + dTrailer/2 + margin;
@@ -440,7 +441,11 @@ function checkCollisions(){
     const truckYMax = robot.position.y + hWaist/2 + + hAbdomen + hChest + margin;
     const truckYMin = robot.position.y - hWaist/2 - rWheel/2 - margin;
     const truckZMax = robot.position.z + dChest/2 + margin;
-    const truckZMin = robot.position.z - dChest/2 - dThigh - dLeg - margin;
+    const truckZMin = robot.position.z - dChest/2 - hThigh - hLeg - margin;
+    const xMatch = (trailerXMin < truckXMin && truckXMin < trailerXMax) || (trailerXMin < truckXMax && truckXMax < trailerXMax);
+    const yMatch = (trailerYMin < truckYMin && truckYMin < trailerYMax) || (trailerYMin < truckYMax && truckYMax < trailerYMax);
+    const zMatch = (trailerZMin < truckZMin && truckZMin < trailerZMax) || (trailerZMin < truckZMax && truckZMax < trailerZMax); 
+    return xMatch && yMatch && zMatch;
 }
 
 ///////////////////////
@@ -534,8 +539,12 @@ function update(){
         else
             head.rotation.x = 0;
     }
-
-    checkCollisions();
+    if (legs.rotation.x == Math.PI/2 && feet.rotation.x == -Math.PI/2 && head.rotation.x == Math.PI && armRight.position.x == -lArm/2 && armLeft.position.x == lArm/2) 
+        isTruck = true;
+    else 
+        isTruck = false;
+    if (isTruck && checkCollisions())
+        handleCollisions();
 }
 
 /////////////
