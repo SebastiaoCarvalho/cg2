@@ -84,6 +84,8 @@ const radialSegments = 32;
 const rotationIncrement = Math.PI/4;
 const translationIncrement = 1.38;
 
+var truckMode = false;
+
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -453,7 +455,20 @@ function checkCollisions(){
 ///////////////////////
 function handleCollisions(){
     'use strict';
-
+    // use this deltaTime = globalClock.getDelta();
+    const translation = 0.07;
+    if (trailer.position.x < 0) {
+        trailer.translateX(translation);
+    }
+    if (trailer.position.x > 0) {
+        trailer.translateX(-translation);
+    }
+    if (trailer.position.z < -33) {
+        trailer.translateZ(translation);
+    }
+    if (trailer.position.z > -33) {
+        trailer.translateZ(-translation);
+    }
 }
 
 ////////////
@@ -474,71 +489,74 @@ function update(){
         materials[i].wireframe = wireframing;
     }
 
-    if(legs.userData.rotatingUp){
-        if(legs.rotation.x + rotationIncrement * deltaTime <= Math.PI/2)
-            legs.rotateX(rotationIncrement * deltaTime);
-        else
-            legs.rotation.x = Math.PI/2;
-    }
-
-    if(legs.userData.rotatingDown){
-        if(legs.rotation.x -rotationIncrement * deltaTime >= 0)
-            legs.rotateX(-rotationIncrement * deltaTime);
-        else
-            legs.rotation.x = 0;
-    }
-
-    if(armRight.userData.movingIn && armLeft.userData.movingIn){
-        if(armRight.position.x + translationIncrement * deltaTime <= -lArm/2 
-            && armLeft.position.x + translationIncrement * deltaTime >= lArm/2){
-            armRight.translateX(translationIncrement * deltaTime);
-            armLeft.translateX(-translationIncrement * deltaTime);
+    if (!checkCollisions()) {
+        if(legs.userData.rotatingUp){
+            if(legs.rotation.x + rotationIncrement * deltaTime <= Math.PI/2)
+                legs.rotateX(rotationIncrement * deltaTime);
+            else
+                legs.rotation.x = Math.PI/2;
         }
-        else{
-            armRight.position.x = -lArm/2;
-            armLeft.position.x = lArm/2;
+    
+        if(legs.userData.rotatingDown){
+            if(legs.rotation.x -rotationIncrement * deltaTime >= 0)
+                legs.rotateX(-rotationIncrement * deltaTime);
+            else
+                legs.rotation.x = 0;
+        }
+    
+        if(armRight.userData.movingIn && armLeft.userData.movingIn){
+            if(armRight.position.x + translationIncrement * deltaTime <= -lArm/2 
+                && armLeft.position.x + translationIncrement * deltaTime >= lArm/2){
+                armRight.translateX(translationIncrement * deltaTime);
+                armLeft.translateX(-translationIncrement * deltaTime);
+            }
+            else{
+                armRight.position.x = -lArm/2;
+                armLeft.position.x = lArm/2;
+            }
+        }
+        if(armRight.userData.movingOut && armLeft.userData.movingOut){
+            if(armRight.position.x + translationIncrement * deltaTime >= -lArm 
+                && armLeft.position.x + translationIncrement * deltaTime <= lArm){
+                armRight.translateX(-translationIncrement * deltaTime);
+                armLeft.translateX(translationIncrement * deltaTime);
+            }
+            else{
+                armRight.position.x = -lArm;
+                armLeft.position.x = lArm;
+            }
+        }
+    
+        if (feet.userData.rotatingUp) {
+            if (feet.rotation.x - rotationIncrement * deltaTime >= -Math.PI/2)
+                feet.rotateX(-rotationIncrement * deltaTime);
+            else
+                feet.rotation.x = -Math.PI/2;
+        }
+    
+        if (feet.userData.rotatingDown) {
+            if(feet.rotation.x + rotationIncrement * deltaTime <= 0)
+                feet.rotateX(rotationIncrement * deltaTime);
+            else
+                feet.rotation.x = 0;
+        }
+    
+        if (head.userData.rotatingUp) {
+            if(head.rotation.x + rotationIncrement * deltaTime <= Math.PI 
+                && head.rotation.x + rotationIncrement * deltaTime>= 0)
+                head.rotateX(2*rotationIncrement * deltaTime);
+            else
+                head.rotation.x = Math.PI;
+        }
+    
+        if (head.userData.rotatingDown) {
+            if(head.rotation.x - rotationIncrement * deltaTime >= 0)
+                head.rotateX(-2*rotationIncrement * deltaTime);
+            else
+                head.rotation.x = 0;
         }
     }
-    if(armRight.userData.movingOut && armLeft.userData.movingOut){
-        if(armRight.position.x + translationIncrement * deltaTime >= -lArm 
-            && armLeft.position.x + translationIncrement * deltaTime <= lArm){
-            armRight.translateX(-translationIncrement * deltaTime);
-            armLeft.translateX(translationIncrement * deltaTime);
-        }
-        else{
-            armRight.position.x = -lArm;
-            armLeft.position.x = lArm;
-        }
-    }
 
-    if (feet.userData.rotatingUp) {
-        if (feet.rotation.x - rotationIncrement * deltaTime >= -Math.PI/2)
-            feet.rotateX(-rotationIncrement * deltaTime);
-        else
-            feet.rotation.x = -Math.PI/2;
-    }
-
-    if (feet.userData.rotatingDown) {
-        if(feet.rotation.x + rotationIncrement * deltaTime <= 0)
-            feet.rotateX(rotationIncrement * deltaTime);
-        else
-            feet.rotation.x = 0;
-    }
-
-    if (head.userData.rotatingUp) {
-        if(head.rotation.x + rotationIncrement * deltaTime <= Math.PI 
-            && head.rotation.x + rotationIncrement * deltaTime>= 0)
-            head.rotateX(2*rotationIncrement * deltaTime);
-        else
-            head.rotation.x = Math.PI;
-    }
-
-    if (head.userData.rotatingDown) {
-        if(head.rotation.x - rotationIncrement * deltaTime >= 0)
-            head.rotateX(-2*rotationIncrement * deltaTime);
-        else
-            head.rotation.x = 0;
-    }
     if (legs.rotation.x == Math.PI/2 && feet.rotation.x == -Math.PI/2 && head.rotation.x == Math.PI && armRight.position.x == -lArm/2 && armLeft.position.x == lArm/2) 
         isTruck = true;
     else 
