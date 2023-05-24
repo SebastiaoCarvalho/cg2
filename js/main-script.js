@@ -670,6 +670,9 @@ function onKeyDown(e) {
         case 54:    // number 6
             wireframing = !wireframing;
             break;
+        case 55:
+             trailer.position.set(0, hTrailer/2 + hTrailerBase + rTrailerWheel, -50);
+             break;
         case 65:    // letter A/a
             feet.userData.rotatingDown = true;
             break;
