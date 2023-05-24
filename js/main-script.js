@@ -456,19 +456,18 @@ function checkCollisions(){
 ///////////////////////
 function handleCollisions(){
     'use strict';
-    // use this deltaTime = globalClock.getDelta();
-    const translation = 0.07;
+    const translation = step;
     if (trailer.position.x < 0) {
-        trailer.translateX(translation);
+        trailer.translateX(translation*deltaTime);
     }
     if (trailer.position.x > 0) {
-        trailer.translateX(-translation);
+        trailer.translateX(-translation*deltaTime);
     }
     if (trailer.position.z < -33) {
-        trailer.translateZ(translation);
+        trailer.translateZ(translation*deltaTime);
     }
     if (trailer.position.z > -33) {
-        trailer.translateZ(-translation);
+        trailer.translateZ(-translation*deltaTime);
     }
 }
 
@@ -477,7 +476,6 @@ function handleCollisions(){
 ////////////
 function update(){
     'use strict';
-    deltaTime = globalClock.getDelta();
     var velocityValue = step;
     if ((leftArrowPressed ? !rightArrowPressed : rightArrowPressed) && (upArrowPressed ? !downArrowPressed : downArrowPressed)) // normalize if move is diagonal
         velocityValue = (velocityValue / Math.sqrt(velocityValue ** 2 + velocityValue ** 2)) * velocityValue;
@@ -609,6 +607,8 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
+
+    deltaTime = globalClock.getDelta();
 
     update();
     render();
