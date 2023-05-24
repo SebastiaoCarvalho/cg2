@@ -53,7 +53,7 @@ const lHead=4, hHead=4, dHead=3;
 var headAntenaLegsFootMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: wireframing });
 
 /* Eye */
-const rEye=0.5;
+const rEye=0.5, hEye=0.2;
 
 /* Antena */
 const rAntena=0.5, hAntena=1;
@@ -305,7 +305,8 @@ function addHead(obj, x, y, z) {
 function addEye(obj, x, y, z) {
     'use strict';
 
-    const geometry = new THREE.SphereGeometry(rEye, radialSegments, radialSegments);
+    const geometry = new THREE.CylinderGeometry(rEye, rEye, hEye, radialSegments);
+    geometry.rotateX(Math.PI/2);
     const mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
     mesh.position.set(x, y, z);
