@@ -479,7 +479,7 @@ function update(){
     'use strict';
     deltaTime = globalClock.getDelta();
     var velocityValue = step;
-    if ((leftArrowPressed || rightArrowPressed) && (upArrowPressed || downArrowPressed)) // normalize if move is diagonal
+    if ((leftArrowPressed ? !rightArrowPressed : rightArrowPressed) && (upArrowPressed ? !downArrowPressed : downArrowPressed)) // normalize if move is diagonal
         velocityValue = (velocityValue / Math.sqrt(velocityValue ** 2 + velocityValue ** 2)) * velocityValue;
     if (leftArrowPressed) trailer.position.x -= velocityValue * deltaTime;
     if (rightArrowPressed) trailer.position.x += velocityValue * deltaTime;
@@ -489,8 +489,8 @@ function update(){
     for (let i = 0; i < materials.length; i++) {
         materials[i].wireframe = wireframing;
     }
-
-    if (!checkCollisions()) {
+    const isCollision = isTruck && !checkCollisions();
+    if (!isCollision) {
         if(legs.userData.rotatingUp){
             if(legs.rotation.x + rotationIncrement * deltaTime <= Math.PI/2)
                 legs.rotateX(rotationIncrement * deltaTime);
@@ -562,7 +562,7 @@ function update(){
         isTruck = true;
     else 
         isTruck = false;
-    if (isTruck && checkCollisions())
+    if (isCollision)
         handleCollisions();
 }
 
@@ -635,6 +635,7 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
+    console.log(e.keyCode);
     // number 1 to 5
     if (49 <= e.keyCode && e.keyCode <= 53) {
         mainCamera = cameras[e.keyCode - 49];
