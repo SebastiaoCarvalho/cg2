@@ -9,8 +9,6 @@ var globalClock, deltaTime;
 
 var leftArrowPressed, upArrowPressed, rightArrowPressed, downArrowPressed;
 
-var trailer;
-
 var isCollision;
 
 const step = 10;
@@ -88,14 +86,12 @@ const radialSegments = 32;
 const rotationIncrement = Math.PI/4;
 const translationIncrement = 1.38;
 
-var truckMode = false;
 
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
 function createScene(){
     'use strict';
-
     const backgroundColor = new THREE.Color('rgb(200, 255, 255)');
 
     scene = new THREE.Scene();
@@ -111,7 +107,6 @@ function createScene(){
 //////////////////////
 function createCamera() {
     'use strict';
-    
     const aspect = window.innerWidth / window.innerHeight;
     const left = -70;
     const right = 70;
@@ -183,7 +178,6 @@ function createRobot(x, y, z){
     /* Head */
     head = new THREE.Object3D();
     head.userData = { rotatingUp: false, rotatingDown: false };
-    head.add(new THREE.AxesHelper(5));
     robot.add(head);
     var xHead = 0;
     var yHead = hWaist/2 + hAbdomen + hChest - 0.1;
@@ -199,7 +193,6 @@ function createRobot(x, y, z){
     /* Left Arm */
     armLeft = new THREE.Object3D();
     armLeft.userData = { movingIn: false, movingOut: false};
-    armLeft.add(new THREE.AxesHelper(5));
     robot.add(armLeft);
     var xLeftArm = lWaist/2 + lArm/10;
     var yLeftArm = hWaist/2 + (hAbdomen+hChest)/2;
@@ -213,7 +206,6 @@ function createRobot(x, y, z){
     /* Right Arm */
     armRight = new THREE.Object3D();
     armRight.userData = { movingIn: false, movingOut: false};
-    armRight.add(new THREE.AxesHelper(5));
     robot.add(armRight);
     var xRightArm = -lWaist/2 - lArm/10;
     var yRightArm = hWaist/2 + (hAbdomen+hChest)/2;
@@ -227,7 +219,6 @@ function createRobot(x, y, z){
     /* Legs */
     legs = new THREE.Object3D();
     legs.userData = { rotatingUp: false, rotatingDown: false};
-    legs.add(new THREE.AxesHelper(5));
     robot.add(legs);
     /* Same Axis as Father */
 
@@ -243,7 +234,6 @@ function createRobot(x, y, z){
     /* Feet */
     feet = new THREE.Object3D();
     feet.userData = { rotatingUp: false, rotatingDown: false };
-    feet.add(new THREE.AxesHelper(5));
     legs.add(feet);
     var xFeet = 0;
     var yFeet = -(hWaist/2 + hThigh + hLeg);
@@ -258,7 +248,6 @@ function createRobot(x, y, z){
 
 function addWaist(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lWaist, hWaist, dWaist);
     const mesh = new THREE.Mesh(geometry, waistMaterial);
 
@@ -268,7 +257,6 @@ function addWaist(obj, x, y, z) {
 
 function addAbdomen(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lAbdomen, hAbdomen, dAbdomen);
     const mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
 
@@ -278,7 +266,6 @@ function addAbdomen(obj, x, y, z) {
 
 function addChest(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lChest, hChest, dChest);
     const mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
 
@@ -298,7 +285,6 @@ function addWheel(obj, x, y, z) {
 
 function addHead(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lHead, hHead, dHead);
     const mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
@@ -308,7 +294,6 @@ function addHead(obj, x, y, z) {
 
 function addEye(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.CylinderGeometry(rEye, rEye, hEye, radialSegments);
     geometry.rotateX(Math.PI/2);
     const mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
@@ -319,7 +304,6 @@ function addEye(obj, x, y, z) {
 
 function addAntena(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.CylinderGeometry(rAntena, rAntena, hAntena, radialSegments);
     const mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
@@ -329,7 +313,6 @@ function addAntena(obj, x, y, z) {
 
 function addArm(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lArm, hArm, dArm);
     const mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
 
@@ -339,7 +322,6 @@ function addArm(obj, x, y, z) {
 
 function addForearm(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lForearm, hForearm, dForearm);
     const mesh = new THREE.Mesh(geometry, abdomenChestArmForearmMaterial);
 
@@ -349,7 +331,6 @@ function addForearm(obj, x, y, z) {
 
 function addTube(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.CylinderGeometry(rTube, rTube, hTube, radialSegments);
     const mesh = new THREE.Mesh(geometry, wheelTubeEyeConnectorMaterial);
 
@@ -359,7 +340,6 @@ function addTube(obj, x, y, z) {
 
 function addThigh(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lThigh, hThigh, dThigh);
     const mesh = new THREE.Mesh(geometry, thighMaterial);
 
@@ -369,7 +349,6 @@ function addThigh(obj, x, y, z) {
 
 function addLeg(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lLeg, hLeg, dLeg);
     const mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
@@ -379,7 +358,6 @@ function addLeg(obj, x, y, z) {
 
 function addFoot(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lFoot, hFoot, dFoot);
     const mesh = new THREE.Mesh(geometry, headAntenaLegsFootMaterial);
 
@@ -416,7 +394,6 @@ function addBox(obj, x, y, z) {
 
 function addTrailerBase(obj, x, y, z) {
     'use strict';
-
     const geometry = new THREE.BoxGeometry(lTrailerBase, hTrailerBase, dTrailerBase);
     const mesh = new THREE.Mesh(geometry, trailerMaterial);
 
@@ -447,7 +424,7 @@ function addConnector(obj, x, y, z) {
 //////////////////////
 function checkCollisions(){    
     'use strict';
-    const margin = 0.2;
+    const margin = 0.05;
     const trailerXMin = trailer.position.x - lTrailer/2 - margin;
     const trailerXMax = trailer.position.x + lTrailer/2 + margin;
     const trailerYMin = trailer.position.y - hTrailer/2 - margin;
@@ -472,16 +449,18 @@ function checkCollisions(){
 function handleCollisions(){
     'use strict';
     const translation = step;
-    if (trailer.position.x < 0) {
+    const robotPositionX = 0;
+    const robotLegsPositionZ = 33;
+    if (trailer.position.x < robotPositionX) {
         trailer.translateX(translation*deltaTime);
     }
-    if (trailer.position.x > 0) {
+    if (trailer.position.x > robotPositionX) {
         trailer.translateX(-translation*deltaTime);
     }
-    if (trailer.position.z < -33) {
+    if (trailer.position.z < -robotLegsPositionZ) {
         trailer.translateZ(translation*deltaTime);
     }
-    if (trailer.position.z > -33) {
+    if (trailer.position.z > -robotLegsPositionZ) {
         trailer.translateZ(-translation*deltaTime);
     }
 }
@@ -599,15 +578,15 @@ function update(){
     createScene();
     createCamera();
     
-    trailerVelocityX = 0;
-    trailerVelocityZ = 0;
+    trailerVelocityX = 0, trailerVelocityZ = 0;
 
     globalClock = new THREE.Clock(true);
     deltaTime = globalClock.getDelta();
 
     leftArrowPressed = false, rightArrowPressed = false, downArrowPressed = false, upArrowPressed = false;
 
-    materials = [waistMaterial, abdomenChestArmForearmMaterial, headAntenaLegsFootMaterial, thighMaterial, trailerMaterial, wheelTubeEyeConnectorMaterial];
+    materials = [waistMaterial, abdomenChestArmForearmMaterial, headAntenaLegsFootMaterial, 
+                    thighMaterial, trailerMaterial, wheelTubeEyeConnectorMaterial];
     
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("keydown", onKeyDown);
@@ -648,7 +627,6 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-    console.log(e.keyCode);
     // number 1 to 5
     if (49 <= e.keyCode && e.keyCode <= 53) {
         mainCamera = cameras[e.keyCode - 49];
