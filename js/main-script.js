@@ -11,6 +11,8 @@ var leftArrowPressed, upArrowPressed, rightArrowPressed, downArrowPressed;
 
 var trailer;
 
+var isCollision;
+
 const step = 10;
 
 var wireframing = true;
@@ -443,9 +445,9 @@ function addConnector(obj, x, y, z) {
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
-function checkCollisions(){
+function checkCollisions(){    
     'use strict';
-    const margin = 0;
+    const margin = 0.2;
     const trailerXMin = trailer.position.x - lTrailer/2 - margin;
     const trailerXMax = trailer.position.x + lTrailer/2 + margin;
     const trailerYMin = trailer.position.y - hTrailer/2 - margin;
@@ -490,35 +492,34 @@ function handleCollisions(){
 function update(){
     'use strict';
     var velocityValue = step;
-    if ((leftArrowPressed ? !rightArrowPressed : rightArrowPressed) && (upArrowPressed ? !downArrowPressed : downArrowPressed)) // normalize if move is diagonal
-        velocityValue = (velocityValue / Math.sqrt(velocityValue ** 2 + velocityValue ** 2)) * velocityValue;
-    if (leftArrowPressed) trailer.position.x -= velocityValue * deltaTime;
-    if (rightArrowPressed) trailer.position.x += velocityValue * deltaTime;
-    if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
-    if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
-
+    
     for (let i = 0; i < materials.length; i++) {
         materials[i].wireframe = wireframing;
     }
-    const isCollision = isTruck && checkCollisions();
     if (!isCollision) {
+        if ((leftArrowPressed ? !rightArrowPressed : rightArrowPressed) && (upArrowPressed ? !downArrowPressed : downArrowPressed)) // normalize if move is diagonal
+            velocityValue = (velocityValue / Math.sqrt(velocityValue ** 2 + velocityValue ** 2)) * velocityValue;
+        if (leftArrowPressed) trailer.position.x -= velocityValue * deltaTime;
+        if (rightArrowPressed) trailer.position.x += velocityValue * deltaTime;
+        if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
+        if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
         if(legs.userData.rotatingUp){
             if(legs.rotation.x + rotationIncrement * deltaTime <= Math.PI/2)
-                legs.rotateX(rotationIncrement * deltaTime);
+            legs.rotateX(rotationIncrement * deltaTime);
             else
-                legs.rotation.x = Math.PI/2;
+            legs.rotation.x = Math.PI/2;
         }
-    
+        
         if(legs.userData.rotatingDown){
             if(legs.rotation.x -rotationIncrement * deltaTime >= 0)
-                legs.rotateX(-rotationIncrement * deltaTime);
+            legs.rotateX(-rotationIncrement * deltaTime);
             else
-                legs.rotation.x = 0;
+            legs.rotation.x = 0;
         }
-    
+        
         if(armRight.userData.movingIn && armLeft.userData.movingIn){
             if(armRight.position.x + translationIncrement * deltaTime <= -lArm/2 
-                && armLeft.position.x + translationIncrement * deltaTime >= lArm/2){
+            && armLeft.position.x + translationIncrement * deltaTime >= lArm/2){
                 armRight.translateX(translationIncrement * deltaTime);
                 armLeft.translateX(-translationIncrement * deltaTime);
             }
@@ -530,67 +531,68 @@ function update(){
         if(armRight.userData.movingOut && armLeft.userData.movingOut){
             if(armRight.position.x + translationIncrement * deltaTime >= -lArm 
                 && armLeft.position.x + translationIncrement * deltaTime <= lArm){
-                armRight.translateX(-translationIncrement * deltaTime);
-                armLeft.translateX(translationIncrement * deltaTime);
+                    armRight.translateX(-translationIncrement * deltaTime);
+                    armLeft.translateX(translationIncrement * deltaTime);
+                }
+                else{
+                    armRight.position.x = -lArm;
+                    armLeft.position.x = lArm;
+                }
             }
-            else{
-                armRight.position.x = -lArm;
-                armLeft.position.x = lArm;
-            }
-        }
-    
-        if (feet.userData.rotatingUp) {
-            if (feet.rotation.x - rotationIncrement * deltaTime >= -Math.PI/2)
+            
+            if (feet.userData.rotatingUp) {
+                if (feet.rotation.x - rotationIncrement * deltaTime >= -Math.PI/2)
                 feet.rotateX(-rotationIncrement * deltaTime);
             else
-                feet.rotation.x = -Math.PI/2;
+            feet.rotation.x = -Math.PI/2;
         }
-    
+        
         if (feet.userData.rotatingDown) {
             if(feet.rotation.x + rotationIncrement * deltaTime <= 0)
-                feet.rotateX(rotationIncrement * deltaTime);
+            feet.rotateX(rotationIncrement * deltaTime);
             else
-                feet.rotation.x = 0;
+            feet.rotation.x = 0;
         }
-    
+        
         if (head.userData.rotatingUp) {
             if(head.rotation.x + rotationIncrement * deltaTime <= Math.PI 
                 && head.rotation.x + rotationIncrement * deltaTime>= 0)
                 head.rotateX(2*rotationIncrement * deltaTime);
-            else
+                else
                 head.rotation.x = Math.PI;
-        }
-    
-        if (head.userData.rotatingDown) {
-            if(head.rotation.x - rotationIncrement * deltaTime >= 0)
+            }
+            
+            if (head.userData.rotatingDown) {
+                if(head.rotation.x - rotationIncrement * deltaTime >= 0)
                 head.rotateX(-2*rotationIncrement * deltaTime);
-            else
+                else
                 head.rotation.x = 0;
+            }
         }
-    }
-    else
-        handleCollisions();
-    if (legs.rotation.x == Math.PI/2 && feet.rotation.x == -Math.PI/2 && head.rotation.x == Math.PI && armRight.position.x == -lArm/2 && armLeft.position.x == lArm/2) 
+        else
+            handleCollisions();
+        isCollision = isTruck && checkCollisions();
+        if (legs.rotation.x == Math.PI/2 && feet.rotation.x == -Math.PI/2 && head.rotation.x == Math.PI && armRight.position.x == -lArm/2 && armLeft.position.x == lArm/2) 
         isTruck = true;
-    else 
+        else 
         isTruck = false;
-}
-
-/////////////
-/* DISPLAY */
-/////////////
-function render() {
-    'use strict';
-    renderer.render(scene, mainCamera);
-}
-
-////////////////////////////////
-/* INITIALIZE ANIMATION CYCLE */
-////////////////////////////////
-function init() {
-    renderer = new THREE.WebGLRenderer({
-        antialias: true
-    });
+    }
+    
+    /////////////
+    /* DISPLAY */
+    /////////////
+    function render() {
+        'use strict';
+        renderer.render(scene, mainCamera);
+    }
+    
+    ////////////////////////////////
+    /* INITIALIZE ANIMATION CYCLE */
+    ////////////////////////////////
+    function init() {
+        renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     
