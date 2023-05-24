@@ -502,7 +502,7 @@ function update(){
     for (let i = 0; i < materials.length; i++) {
         materials[i].wireframe = wireframing;
     }
-    const isCollision = isTruck && !checkCollisions();
+    const isCollision = isTruck && checkCollisions();
     if (!isCollision) {
         if(legs.userData.rotatingUp){
             if(legs.rotation.x + rotationIncrement * deltaTime <= Math.PI/2)
