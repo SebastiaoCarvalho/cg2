@@ -69,10 +69,8 @@ const lLeg=5, hLeg=13, dLeg=5;
 const lFoot=5, hFoot=3, dFoot=3;
 
 /* Trailer */
-const lTrailer = 12, hTrailer = 18-5.5, dTrailer = 48;
+const lTrailer = 12, hTrailer = 18, dTrailer = 48;
 var trailerMaterial = new THREE.MeshBasicMaterial({ color: 0x838383, wireframe: wireframing });
-
-const lTrailerBase = 12, hTrailerBase = 5.5, dTrailerBase = 24;
 
 /* Trailer Wheel */
 const rTrailerWheel = 2, hTrailerWheel = 1;
@@ -100,7 +98,7 @@ function createScene(){
     scene.background = backgroundColor;
     scene.add(new THREE.AxisHelper(10));
 
-    createTrailer(0, hTrailer/2 + hTrailerBase + rTrailerWheel, -50);
+    createTrailer(0, hTrailer/2 + rTrailerWheel, -50);
     createRobot(0, hWaist/2 + rWheel, 0);
 }
 
@@ -391,12 +389,11 @@ function createTrailer(x, y, z) {
     trailer.position.set(x, y, z);
 
     addBox(trailer, 0, 0, 0);
-    addTrailerBase(trailer, 0, -hTrailer/2-hTrailerBase/2, -dTrailer/2 + dTrailerBase/2);
     
-    addTWheel(trailer, lTrailer/2, -hTrailer/2 - hTrailerBase, -dTrailer/2 + 2 + rTrailerWheel);
-    addTWheel(trailer, lTrailer/2, -hTrailer/2 - hTrailerBase, -dTrailer/2 + 2 + 2*rTrailerWheel + 2 + rTrailerWheel);
-    addTWheel(trailer, -lTrailer/2, -hTrailer/2 - hTrailerBase, -dTrailer/2 + 2 + rTrailerWheel);
-    addTWheel(trailer, -lTrailer/2, -hTrailer/2 - hTrailerBase, -dTrailer/2 + 2 + 2*rTrailerWheel + 2 + rTrailerWheel);
+    addTWheel(trailer, lTrailer/2, -hTrailer/2, -dTrailer/2 + 2 + rTrailerWheel);
+    addTWheel(trailer, lTrailer/2, -hTrailer/2, -dTrailer/2 + 2 + 2*rTrailerWheel + 2 + rTrailerWheel);
+    addTWheel(trailer, -lTrailer/2, -hTrailer/2, -dTrailer/2 + 2 + rTrailerWheel);
+    addTWheel(trailer, -lTrailer/2, -hTrailer/2, -dTrailer/2 + 2 + 2*rTrailerWheel + 2 + rTrailerWheel);
 
     addConnector(trailer, 0, -hTrailer/2 - hTrailerConnector/2, dTrailer/2 - 3*rTrailerConnector);
 
@@ -406,16 +403,6 @@ function createTrailer(x, y, z) {
 function addBox(obj, x, y, z) {
     'use strict';
     const geometry = new THREE.BoxGeometry(lTrailer, hTrailer, dTrailer);
-    const mesh = new THREE.Mesh(geometry, trailerMaterial);
-
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
-function addTrailerBase(obj, x, y, z) {
-    'use strict';
-
-    const geometry = new THREE.BoxGeometry(lTrailerBase, hTrailerBase, dTrailerBase);
     const mesh = new THREE.Mesh(geometry, trailerMaterial);
 
     mesh.position.set(x, y, z);
@@ -570,13 +557,13 @@ function update(){
                 head.rotation.x = 0;
         }
     }
+    else
+        handleCollisions();
 
     if (legs.rotation.x == Math.PI/2 && feet.rotation.x == -Math.PI/2 && head.rotation.x == Math.PI && armRight.position.x == -lArm/2 && armLeft.position.x == lArm/2) 
         isTruck = true;
     else 
         isTruck = false;
-    if (isCollision)
-        handleCollisions();
 }
 
 /////////////
@@ -670,9 +657,6 @@ function onKeyDown(e) {
         case 54:    // number 6
             wireframing = !wireframing;
             break;
-        case 55:
-             trailer.position.set(0, hTrailer/2 + hTrailerBase + rTrailerWheel, -50);
-             break;
         case 65:    // letter A/a
             feet.userData.rotatingDown = true;
             break;
