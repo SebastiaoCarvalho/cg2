@@ -604,7 +604,6 @@ function update(){
 
     globalClock = new THREE.Clock(true);
     deltaTime = globalClock.getDelta();
-    render();
 
     leftArrowPressed = false, rightArrowPressed = false, downArrowPressed = false, upArrowPressed = false;
 
