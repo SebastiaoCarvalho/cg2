@@ -162,10 +162,10 @@ function createScene() {
 function createCamera() {
     "use strict";
     const aspect = window.innerWidth / window.innerHeight;
-    const left = -80;
-    const right = 80;
-    const top = 40;
-    const down = -40;
+    const left = -140;
+    const right = 140;
+    const top = 75;
+    const down = -75;
     const fov = 70;
     const near = 1;
     const far = 1000;
