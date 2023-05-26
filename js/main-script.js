@@ -1,4 +1,11 @@
-//////////////////////tempcam
+/*  
+    Extra features:
+        Number 7 -> Reset the trailer to its original position 
+        Letter O -> Equivalent to pressing the letters q, w, e and r at the same time
+        Letter L -> Equivalent to pressing the letters a, s, d and f at the same time
+*/
+
+//////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
 var mainCamera, cameras;
@@ -9,6 +16,7 @@ var globalClock, deltaTime;
 
 var leftArrowPressed, upArrowPressed, rightArrowPressed, downArrowPressed;
 
+/* Flag  used for checking if the trailer is colliding with the truck */
 var isCollision;
 
 const step = 10;
@@ -114,6 +122,7 @@ var trailerMaterial = new THREE.MeshBasicMaterial({
     wireframe: wireframing,
 });
 
+/* Trailer Base */
 const lTrailerBase = 12,
     hTrailerBase = 5.5,
     dTrailerBase = 24;
@@ -132,6 +141,7 @@ const radialSegments = 32;
 const rotationIncrement = Math.PI / 4;
 const translationIncrement = 1.38;
 
+
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -141,7 +151,6 @@ function createScene() {
 
     scene = new THREE.Scene();
     scene.background = backgroundColor;
-    scene.add(new THREE.AxisHelper(10));
 
     createTrailer(0, hTrailer / 2 + hTrailerBase + rTrailerWheel, -50);
     createRobot(0, hWaist / 2 + rWheel, 0);
@@ -161,6 +170,7 @@ function createCamera() {
     const near = 1;
     const far = 1000;
     const distance = 30;
+    const isometricDistance = 35;
     var tempCamera;
     cameras = [];
 
@@ -210,12 +220,12 @@ function createCamera() {
         near,
         far
     );
-    tempCamera.position.set(distance, distance, distance);
+    tempCamera.position.set(isometricDistance, isometricDistance, isometricDistance);
     tempCamera.lookAt(scene.position);
     cameras.push(tempCamera);
 
     tempCamera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    tempCamera.position.set(distance, distance, distance);
+    tempCamera.position.set(isometricDistance, isometricDistance, isometricDistance);
     tempCamera.lookAt(scene.position);
     cameras.push(tempCamera);
 }
@@ -644,6 +654,16 @@ function handleCollisions() {
 ////////////
 /* UPDATE */
 ////////////
+function moveX(object, value, deltaTime) {
+    const vec = new THREE.Vector3(value*deltaTime, 0, 0);
+    object.position.add(vec);
+}
+
+function moveZ(object, value, deltaTime) {
+    const vec = new THREE.Vector3(0, 0, value*deltaTime);
+    object.position.add(vec);
+}
+
 function update() {
     "use strict";
     var velocityValue = step;
@@ -661,10 +681,10 @@ function update() {
                 (velocityValue /
                     Math.sqrt(velocityValue ** 2 + velocityValue ** 2)) *
                 velocityValue;
-        if (leftArrowPressed) trailer.position.x -= velocityValue * deltaTime;
-        if (rightArrowPressed) trailer.position.x += velocityValue * deltaTime;
-        if (upArrowPressed) trailer.position.z -= velocityValue * deltaTime;
-        if (downArrowPressed) trailer.position.z += velocityValue * deltaTime;
+        if (leftArrowPressed) moveX(trailer, -velocityValue, deltaTime);
+        if (rightArrowPressed) moveX(trailer, velocityValue, deltaTime);
+        if (upArrowPressed) moveZ(trailer, -velocityValue, deltaTime);
+        if (downArrowPressed) moveZ(trailer, velocityValue, deltaTime);
         if (legs.userData.rotatingUp) {
             if (legs.rotation.x + rotationIncrement * deltaTime <= Math.PI / 2)
                 legs.rotateX(rotationIncrement * deltaTime);
@@ -684,8 +704,8 @@ function update() {
                 armLeft.position.x + translationIncrement * deltaTime >=
                     lArm / 2
             ) {
-                armRight.translateX(translationIncrement * deltaTime);
-                armLeft.translateX(-translationIncrement * deltaTime);
+                moveX(armRight, translationIncrement, deltaTime);
+                moveX(armLeft, -translationIncrement, deltaTime);
             } else {
                 armRight.position.x = -lArm / 2;
                 armLeft.position.x = lArm / 2;
@@ -697,8 +717,8 @@ function update() {
                     -lArm &&
                 armLeft.position.x + translationIncrement * deltaTime <= lArm
             ) {
-                armRight.translateX(-translationIncrement * deltaTime);
-                armLeft.translateX(translationIncrement * deltaTime);
+                moveX(armRight, -translationIncrement, deltaTime);
+                moveX(armLeft, translationIncrement, deltaTime);
             } else {
                 armRight.position.x = -lArm;
                 armLeft.position.x = lArm;
@@ -844,7 +864,7 @@ function onKeyDown(e) {
         case 54: // number 6
             wireframing = !wireframing;
             break;
-        case 55:
+        case 55: // number 7
             trailer.position.set(
                 0,
                 hTrailer / 2 + hTrailerBase + rTrailerWheel,
