@@ -162,15 +162,15 @@ function createScene() {
 function createCamera() {
     "use strict";
     const aspect = window.innerWidth / window.innerHeight;
-    const left = -70;
-    const right = 70;
+    const left = -80;
+    const right = 80;
     const top = 40;
     const down = -40;
     const fov = 70;
     const near = 1;
     const far = 1000;
-    const distance = 30;
-    const isometricDistance = 35;
+    const distance = 40;
+    const isometricDistance = 50;
     var tempCamera;
     cameras = [];
 
@@ -213,10 +213,10 @@ function createCamera() {
     cameras.push(tempCamera);
 
     tempCamera = new THREE.OrthographicCamera(
-        -distance * aspect,
-        distance * aspect,
-        distance,
-        -distance,
+        -isometricDistance * aspect,
+        isometricDistance * aspect,
+        isometricDistance,
+        -isometricDistance,
         near,
         far
     );
